@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# API Documentation
 
-## Getting Started
+## Base URL
 
-First, run the development server:
+- Local Development: `http://localhost:3001/api`
+- External API: `https://test-fe.mysellerpintar.com/api`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Authentication Endpoints
+
+### 1. Register User
+
+**POST** `/api/auth/register`
+
+**Request Body:**
+
+```json
+{
+  "username": "string",
+  "password": "string",
+  "role": "User"
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Response:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```json
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": "string",
+    "username": "string",
+    "role": "User"
+  }
+}
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Login User
 
-## Learn More
+**POST** `/api/auth/login`
 
-To learn more about Next.js, take a look at the following resources:
+**Request Body:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Success Response:**
 
-## Deploy on Vercel
+```json
+{
+  "token": "string",
+  "user": {
+    "id": "string",
+    "username": "string",
+    "role": "User"
+  }
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Articles Endpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3. Get Articles
+
+**GET** `/api/articles`
+
+**Query Parameters:**
+
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 10)
+
+**Headers:**
+
+- `Authorization: Bearer <token>` (optional)
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "title": "string",
+      "content": "string",
+      "userId": "string",
+      "categoryId": "string",
+      "createdAt": "2025-08-23T11:24:30.354Z",
+      "updatedAt": "2025-08-23T11:24:30.354Z",
+      "category": {
+        "id": "string",
+        "name": "string",
+        "userId": "string",
+        "createdAt": "2025-08-23T11:24:30.354Z",
+        "updatedAt": "2025-08-23T11:24:30.354Z"
+      },
+      "user": {
+        "id": "string",
+        "username": "string",
+        "role": "User"
+      }
+    }
+  ],
+  "total": 0,
+  "page": 0,
+  "limit": 0
+}
+```
+
+## Testing with Postman
+
+### 1. Test Register
+
+- Method: POST
+- URL: `http://localhost:3001/api/auth/register`
+- Headers: `Content-Type: application/json`
+- Body (raw JSON):
+
+```json
+{
+  "username": "testuser",
+  "password": "testpassword",
+  "role": "User"
+}
+```
+
+### 2. Test Login
+
+- Method: POST
+- URL: `http://localhost:3001/api/auth/login`
+- Headers: `Content-Type: application/json`
+- Body (raw JSON):
+
+```json
+{
+  "username": "testuser",
+  "password": "testpassword"
+}
+```
+
+### 3. Test Get Articles
+
+- Method: GET
+- URL: `http://localhost:3001/api/articles?page=1&limit=10`
+- Headers:
+  - `Content-Type: application/json`
+  - `Authorization: Bearer <token_from_login>` (if authentication is required)
+
+## Notes
+
+- All endpoints proxy requests to `https://test-fe.mysellerpintar.com/api`
+- Token from login should be stored and used for authenticated requests
+- The server handles CORS and request forwarding automatically
