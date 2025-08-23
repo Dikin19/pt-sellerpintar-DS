@@ -112,6 +112,7 @@ export default function RegisterForm() {
                         <select
                             id="role"
                             {...register('role')}
+                            suppressHydrationWarning
                             className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.role
                                 ? 'border-red-500 focus:ring-red-500'
                                 : 'border-gray-300'
@@ -166,10 +167,10 @@ export default function RegisterForm() {
                     <p className="text-sm text-black-500">
                         Already have an account?{" "}
                         <Link
-                            href="/"
+                            href="/login"
                             className="inline-block px-4 py-2 rounded-md font-medium text-blue-600 
-                 cursor-pointer transition-colors duration-200 
-                 hover:bg-blue-600 hover:text-white"
+                                        cursor-pointer transition-colors duration-200 
+                                        hover:bg-blue-600 hover:text-white"
                         >
                             Sign in
                         </Link>
