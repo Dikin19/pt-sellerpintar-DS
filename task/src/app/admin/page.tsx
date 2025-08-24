@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { ArticleGrid } from "@/components/articles/article-grid"
 import { ArticleFilters } from "@/components/articles/article-filters"
 import { RoleGuard } from "@/components/auth/role-guard"
@@ -13,54 +13,163 @@ import type { Article, Category, PaginatedResponse } from "@/lib/type"
 import Link from "next/link"
 import { Loader2, LogOut, User, Shield } from "lucide-react"
 
-export default function ArticlesPage() {
+export default function AdminPage() {
   const { user, logout, isLoading: authLoading } = useAuth()
   const { isAdmin } = usePermission()
-  const [articles, setArticles] = useState<Article[]>([])
+  const [allArticles, setAllArticles] = useState<Article[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
-  const [pagination, setPagination] = useState({
-    page: 1,
-    totalPages: 1,
-    total: 0,
-  })
+  const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
   const [filters, setFilters] = useState({
     search: "",
     categoryId: "",
   })
 
-  const fetchArticles = useCallback(
-    async (page = 1) => {
-      setLoading(true)
-      try {
-        const response: PaginatedResponse<Article> = await getArticles({
-          ...filters,
-          page,
-          limit: 9,
-        })
+  const itemsPerPage = 9
 
-        setArticles(response.data ?? [])
-
-        // Use optional chaining for consistent pagination handling
-        setPagination({
-          page: response.pagination?.page ?? page,
-          totalPages: response.pagination?.totalPages ?? 1,
-          total: response.pagination?.total ?? (response.data?.length ?? 0),
-        })
-      } catch (error) {
-        console.error("Failed to fetch articles:", error)
-      } finally {
-        setLoading(false)
+  // Client-side filtering and pagination dengan logika yang sama seperti admin/articles
+  const { articles, pagination } = useMemo(() => {
+    // Ensure allArticles is valid and contains valid articles
+    if (!allArticles || !Array.isArray(allArticles)) {
+      return {
+        articles: [],
+        pagination: {
+          page: 1,
+          totalPages: 1,
+          total: 0
+        }
       }
-    },
-    [filters],
-  )
+    }
 
+    let filtered = [...allArticles]
+
+    console.log("Starting filter with:", {
+      totalArticles: allArticles.length,
+      searchTerm: filters.search,
+      categoryId: filters.categoryId
+    })
+
+    // Filter by search term dengan debounce yang sudah dihandle di SearchInput
+    if (filters.search && filters.search.trim()) {
+      const search = filters.search.toLowerCase().trim()
+      console.log("Applying search filter:", search)
+
+      filtered = filtered.filter(article => {
+        // Safely check each property for null/undefined before calling toLowerCase
+        const title = article.title || ""
+        const content = article.content || ""
+        const excerpt = article.excerpt || ""
+
+        const matchesTitle = title.toLowerCase().includes(search)
+        const matchesContent = content.toLowerCase().includes(search)
+        const matchesExcerpt = excerpt.toLowerCase().includes(search)
+
+        const matches = matchesTitle || matchesContent || matchesExcerpt
+
+        if (matches) {
+          console.log("Article matches search:", {
+            id: article.id,
+            title: title.substring(0, 50),
+            matchesTitle,
+            matchesContent,
+            matchesExcerpt
+          })
+        }
+
+        return matches
+      })
+
+      console.log("After search filter:", filtered.length, "articles")
+    }
+
+    // Filter by category
+    if (filters.categoryId && filters.categoryId.trim()) {
+      console.log("Applying category filter:", filters.categoryId)
+      filtered = filtered.filter(article => article.categoryId === filters.categoryId)
+      console.log("After category filter:", filtered.length, "articles")
+    }
+
+    // Pagination - hanya tampilkan pagination jika data lebih dari 9 item
+    const total = filtered.length
+    const totalPages = Math.ceil(total / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    const paginatedArticles = filtered.slice(startIndex, endIndex)
+
+    return {
+      articles: paginatedArticles,
+      pagination: {
+        page: currentPage,
+        totalPages,
+        total
+      }
+    }
+  }, [allArticles, filters, currentPage, itemsPerPage])
+
+  const fetchAllArticles = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      // Fetch all articles without search/filter - we'll filter client-side
+      const response: PaginatedResponse<Article> = await getArticles({
+        page: 1,
+        limit: 1000 // Get a large number to fetch all articles
+      })
+
+      console.log("Raw API response:", response)
+
+      // Validate and clean the articles data
+      const articles = response.data || []
+      const validArticles = articles.filter(article => {
+        if (!article || typeof article !== 'object') {
+          console.warn("Invalid article object:", article)
+          return false
+        }
+
+        if (!article.id) {
+          console.warn("Article missing ID:", article)
+          return false
+        }
+
+        // Ensure required string properties exist
+        if (typeof article.title !== 'string') {
+          console.warn("Article with invalid title:", article)
+          article.title = article.title || ""
+        }
+
+        if (typeof article.content !== 'string') {
+          console.warn("Article with invalid content:", article)
+          article.content = article.content || ""
+        }
+
+        if (typeof article.excerpt !== 'string') {
+          console.warn("Article with invalid excerpt:", article)
+          article.excerpt = article.excerpt || ""
+        }
+
+        return true
+      })
+
+      console.log("Valid articles after filtering:", validArticles.length)
+      setAllArticles(validArticles)
+    } catch (error) {
+      console.error("Failed to fetch articles:", error)
+      setError("Failed to fetch articles. Please try again.")
+      setAllArticles([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   const fetchCategories = useCallback(async () => {
     try {
       const categoriesData = await getCategories()
-      setCategories(categoriesData.data)
+      // Extract the array from paginated response if needed
+      const categoryList = Array.isArray(categoriesData)
+        ? categoriesData
+        : categoriesData.data || []
+      setCategories(categoryList)
     } catch (error) {
       console.error("Failed to fetch categories:", error)
     }
@@ -68,22 +177,17 @@ export default function ArticlesPage() {
 
   useEffect(() => {
     fetchCategories()
-  }, [fetchCategories])
-
-  useEffect(() => {
-    fetchArticles(1)
-  }, [fetchArticles])
+    fetchAllArticles()
+  }, [fetchCategories, fetchAllArticles])
 
   const handleFiltersChange = useCallback((newFilters: { search: string; categoryId: string }) => {
     setFilters(newFilters)
+    setCurrentPage(1) // Reset to first page when filters change
   }, [])
 
-  const handlePageChange = useCallback(
-    (page: number) => {
-      fetchArticles(page)
-    },
-    [fetchArticles],
-  )
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page)
+  }, [])
 
   if (authLoading) {
     return (
@@ -93,18 +197,33 @@ export default function ArticlesPage() {
     )
   }
 
-  return (
+  const pollinationsUrl = user
+    ? `https://image.pollinations.ai/prompt/${encodeURIComponent(
+      user.username
+    )}%20app%20logo?width=500&height=500&nologo=true`
+    : null
+
+    return (
     <RoleGuard allowedRoles={["Admin", "User"]}>
       <div className="min-h-screen bg-background">
-        {/* Header */}
         <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
           <div className="container mx-auto px-4 py-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-bold text-sm">L</span>
+                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                  {pollinationsUrl ? (
+                    <img
+                      src={pollinationsUrl}
+                      alt="App Logo"
+                      className="w-8 h-8 object-cover"
+                    />
+                  ) : (
+                    <span className="text-xs text-gray-500">N/A</span>
+                  )}
                 </div>
-                <span className="font-semibold">Logoipsum</span>
+                <span className="font-semibold">
+                  Seller Pintar Digital Asia
+                </span>
               </div>
 
               <div className="flex items-center gap-4">
@@ -155,6 +274,16 @@ export default function ArticlesPage() {
           <div className="mb-6">
             <p className="text-muted-foreground">
               Showing: {pagination.total} of {pagination.total} articles
+              {filters.search && (
+                <span className="ml-2 text-sm text-blue-600">
+                  (filtered by: "{filters.search}")
+                </span>
+              )}
+              {filters.categoryId && (
+                <span className="ml-2 text-sm text-green-600">
+                  (category filtered)
+                </span>
+              )}
               {!isAdmin() && (
                 <span className="ml-2 text-sm text-orange-600">
                   (Read-only mode - User access)
@@ -163,7 +292,19 @@ export default function ArticlesPage() {
             </p>
           </div>
 
-          <ArticleFilters categories={categories} onFiltersChange={handleFiltersChange} />
+          {/* Filters dengan debounce 400ms */}
+          <ArticleFilters
+            categories={categories}
+            onFiltersChange={handleFiltersChange}
+            initialSearch={filters.search}
+            initialCategoryId={filters.categoryId}
+          />
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+              {error}
+            </div>
+          )}
 
           {loading ? (
             <div className="flex items-center justify-center py-12">
@@ -171,12 +312,18 @@ export default function ArticlesPage() {
             </div>
           ) : (
             <>
-              <ArticleGrid articles={articles} />
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                onPageChange={handlePageChange}
-              />
+              <ArticleGrid articles={articles} isLoading={loading} />
+
+              {/* Hanya tampilkan pagination jika data lebih dari 9 item */}
+              {pagination.total > itemsPerPage && (
+                <div className="mt-8">
+                  <Pagination
+                    currentPage={pagination.page}
+                    totalPages={pagination.totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              )}
             </>
           )}
         </main>

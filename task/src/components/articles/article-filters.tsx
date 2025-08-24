@@ -43,7 +43,7 @@ export function ArticleFilters({
           value={search}
           onSearch={handleSearchChange}
           placeholder="Search articles..."
-          debounceMs={400}
+          debounceMs={400} // 400ms debounce untuk optimasi performa
         />
       </div>
       <Select value={categoryId || "all"} onValueChange={handleCategoryChange}>
