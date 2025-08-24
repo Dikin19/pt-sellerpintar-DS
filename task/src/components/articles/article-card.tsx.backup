@@ -1,0 +1,85 @@
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, User } from "lucide-react";
+import type { Article } from "@/lib/type";
+
+interface ArticleCardProps {
+  article: Article;
+}
+
+export function ArticleCard({ article }: ArticleCardProps) {
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const truncateContent = (content: string, maxLength: number = 100) => {
+    if (content.length <= maxLength) return content
+    return content.slice(0, maxLength) + "..."
+  }
+
+  return (
+    <Card className="group hover:shadow-lg transition-shadow duration-200 overflow-hidden h-full">
+      <Link href={`/articles/${article.id}`}>
+        <CardContent className="p-6 h-full flex flex-col">
+          <div className="flex items-center gap-2 mb-3">
+            <Badge variant="secondary" className="text-xs">
+              {article.category.name}
+            </Badge>
+            <span className="text-xs text-muted-foreground">{formatDate(article.createdAt)}</span>
+          </div>
+          <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors line-clamp-2 flex-shrink-0">
+            {article.title}
+          </h3>
+          <p className="text-muted-foreground text-sm line-clamp-3 mb-3 flex-grow">
+            {truncateContent(article.content)}
+          </p>
+          <div className="flex items-center justify-between flex-shrink-0">
+            <Badge variant="outline" className="text-xs">
+              By {article.user.username}
+            </Badge>
+  const truncateContent = (content: string, maxLength: number = 150) => {
+    if (content.length <= maxLength) return content;
+    return content.substring(0, maxLength) + '...';
+  };
+
+  return (
+    <Card className="h-full hover:shadow-lg transition-shadow duration-200">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <Badge variant="secondary" className="mb-2">
+            {article.category.name}
+          </Badge>
+        </div>
+        <CardTitle className="text-lg leading-tight">
+          <Link 
+            href={`/articles/${article.id}`}
+            className="hover:text-blue-600 transition-colors"
+          >
+            {article.title}
+          </Link>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {truncateContent(article.content)}
+        </p>
+        
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center">
+            <User className="h-3 w-3 mr-1" />
+            <span>{article.user.username}</span>
+          </div>
+          <div className="flex items-center">
+            <Calendar className="h-3 w-3 mr-1" />
+            <span>{formatDate(article.createdAt)}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

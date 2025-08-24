@@ -49,30 +49,31 @@ export const GET = withUserAuth(async (request: AuthenticatedRequest) => {
     console.log("Status:", res.status);
     console.log("Data structure:", {
       hasData: !!res.data,
-      isArray: Array.isArray(res.data),
-      hasPagination: !!(
-        res.data &&
-        typeof res.data === "object" &&
-        "data" in res.data
-      ),
-      totalItems: res.data?.data?.length || res.data?.length || 0,
+      dataKeys: res.data ? Object.keys(res.data) : [],
+      dataType: Array.isArray(res.data) ? "array" : typeof res.data,
     });
 
-    if (res.data?.data) {
-      console.log(
-        "Sample articles:",
-        res.data.data.slice(0, 2).map((a: any) => ({
-          id: a.id,
-          title: a.title?.substring(0, 50) + "...",
-          hasCategory: !!a.category,
-        }))
-      );
+    // Check if response has pagination structure
+    if (res.data && typeof res.data === "object" && "data" in res.data) {
+      console.log("✓ Paginated response detected");
+      console.log("Articles count:", res.data.data?.length || 0);
+      console.log("Total items:", res.data.total || 0);
+      console.log("Current page:", res.data.page || 1);
+      console.log("Total pages:", res.data.totalPages || 1);
+    } else if (Array.isArray(res.data)) {
+      console.log("✓ Direct array response");
+      console.log("Articles count:", res.data.length);
     }
 
-    // Return the response with expected format
     return NextResponse.json(res.data);
   } catch (error: any) {
-    console.error("=== ARTICLE API ERROR ===", error);
+    console.error("Articles GET error:", error);
+    console.error("Error details:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+
     return NextResponse.json(
       {
         error:
@@ -83,7 +84,6 @@ export const GET = withUserAuth(async (request: AuthenticatedRequest) => {
       { status: error.response?.status || 500 }
     );
   }
-<<<<<<< HEAD
 });
 
 // POST - Only accessible by Admin
@@ -92,15 +92,6 @@ export const POST = withAdminAuth(async (request: AuthenticatedRequest) => {
     const token = getTokenFromRequest(request);
     const api = createAuthenticatedApi(token || undefined);
 
-=======
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const token = getTokenFromRequest(request);
-    const api = createAuthenticatedApi(token || undefined);
-    
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
     const body = await request.json();
 
     if (!body.title || !body.content || !body.categoryId) {
@@ -110,18 +101,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const res = await api.post("/articles", {
-      title: body.title,
-      content: body.content,
-      categoryId: body.categoryId,
-    });
-<<<<<<< HEAD
-
-=======
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
-    return NextResponse.json(res.data);
+    const res = await api.post("/articles", body);
+    return NextResponse.json(res.data, { status: 201 });
   } catch (error: any) {
-    console.error("Create article error:", error);
+    console.error("Articles POST error:", error);
     return NextResponse.json(
       {
         error:
@@ -132,8 +115,4 @@ export async function POST(request: NextRequest) {
       { status: error.response?.status || 500 }
     );
   }
-<<<<<<< HEAD
 });
-=======
-}
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60

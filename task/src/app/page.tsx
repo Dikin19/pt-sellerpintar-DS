@@ -1,6 +1,5 @@
 "use client"
 
-<<<<<<< HEAD
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
@@ -28,10 +27,4 @@ export default function HomePage() {
       <Loader2 className="h-8 w-8 animate-spin" />
     </div>
   )
-=======
-import { redirect } from 'next/navigation';
-
-export default function HomePage() {
-  redirect('/dashboard');
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
 }

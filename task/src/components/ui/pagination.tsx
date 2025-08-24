@@ -1,144 +1,81 @@
-<<<<<<< HEAD
 "use client"
 
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface PaginationProps {
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
-}
-
-export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
-  if (totalPages <= 1) return null
-
-  const getVisiblePages = () => {
-    const delta = 2
-    const range = []
-    const rangeWithDots = []
-
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
-      range.push(i)
-    }
-
-    if (currentPage - delta > 2) {
-      rangeWithDots.push(1, "...")
-    } else {
-      rangeWithDots.push(1)
-    }
-
-    rangeWithDots.push(...range)
-
-    if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push("...", totalPages)
-    } else {
-      rangeWithDots.push(totalPages)
-    }
-
-    return rangeWithDots
-  }
-
-  return (
-    <div className="flex items-center justify-center gap-2 mt-8">
-      <Button variant="outline" size="sm" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
-=======
-import React from 'react';
-import { Button } from './button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  className?: string;
+    currentPage: number
+    totalPages: number
+    onPageChange: (page: number) => void
+    className?: string
 }
 
 export function Pagination({ currentPage, totalPages, onPageChange, className = '' }: PaginationProps) {
-  const getVisiblePages = () => {
-    const delta = 2;
-    const range = [];
-    const rangeWithDots = [];
+    const getVisiblePages = () => {
+        const delta = 2
+        const range = []
+        const rangeWithDots = []
 
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
-      range.push(i);
+        for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+            range.push(i)
+        }
+
+        if (currentPage - delta > 2) {
+            rangeWithDots.push(1, "...")
+        } else {
+            rangeWithDots.push(1)
+        }
+
+        rangeWithDots.push(...range)
+
+        if (currentPage + delta < totalPages - 1) {
+            rangeWithDots.push("...", totalPages)
+        } else {
+            rangeWithDots.push(totalPages)
+        }
+
+        return rangeWithDots
     }
 
-    if (currentPage - delta > 2) {
-      rangeWithDots.push(1, '...');
-    } else {
-      rangeWithDots.push(1);
-    }
+    if (totalPages <= 1) return null
 
-    rangeWithDots.push(...range);
-
-    if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push('...', totalPages);
-    } else {
-      rangeWithDots.push(totalPages);
-    }
-
-    return rangeWithDots;
-  };
-
-  if (totalPages <= 1) return null;
-
-  return (
-    <div className={`flex items-center justify-center space-x-2 ${className}`}>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      >
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
-        <ChevronLeft className="h-4 w-4" />
-        Previous
-      </Button>
-
-      {getVisiblePages().map((page, index) => (
-<<<<<<< HEAD
-        <Button
-          key={index}
-          variant={page === currentPage ? "default" : "outline"}
-          size="sm"
-          onClick={() => typeof page === "number" && onPageChange(page)}
-          disabled={typeof page !== "number"}
-          className="min-w-10"
-        >
-          {page}
-        </Button>
-=======
-        <React.Fragment key={index}>
-          {page === '...' ? (
-            <span className="px-3 py-2 text-gray-500">...</span>
-          ) : (
+    return (
+        <div className={`flex items-center justify-center space-x-2 ${className}`}>
             <Button
-              variant={currentPage === page ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onPageChange(page as number)}
+                variant="outline"
+                size="sm"
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
             >
-              {page}
+                <ChevronLeft className="h-4 w-4" />
+                Previous
             </Button>
-          )}
-        </React.Fragment>
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
-      ))}
 
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      >
-        Next
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-    </div>
-<<<<<<< HEAD
-  )
+            {getVisiblePages().map((page, index) => (
+                <div key={index}>
+                    {page === "..." ? (
+                        <span className="px-3 py-2 text-gray-500">...</span>
+                    ) : (
+                        <Button
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => onPageChange(page as number)}
+                        >
+                            {page}
+                        </Button>
+                    )}
+                </div>
+            ))}
+
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+            >
+                Next
+                <ChevronRight className="h-4 w-4" />
+            </Button>
+        </div>
+    )
 }
-=======
-  );
-}
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60

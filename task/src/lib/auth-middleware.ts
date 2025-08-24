@@ -10,7 +10,7 @@ export interface AuthenticatedRequest extends NextRequest {
   };
 }
 
-export async function withAuth(
+export function withAuth(
   handler: (
     request: AuthenticatedRequest,
     ...args: any[]

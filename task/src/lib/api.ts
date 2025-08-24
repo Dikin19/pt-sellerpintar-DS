@@ -1,10 +1,8 @@
 import api from "./axios";
-<<<<<<< HEAD
 import {
   LoginFormData,
   RegisterFormData,
   ArticleFormData,
-  ArticleUpdateData,
   CategoryFormData,
 } from "./validations";
 import {
@@ -14,10 +12,6 @@ import {
   ArticleFilters,
   CategoryFilters,
 } from "./type";
-=======
-import { LoginFormData, RegisterFormData } from "./validations";
-import { Article, Category, PaginatedResponse } from "@/types";
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
 
 // Articles API functions
 export async function getArticles(
@@ -60,7 +54,6 @@ export async function getArticle(id: string): Promise<Article> {
   return res.data;
 }
 
-<<<<<<< HEAD
 export async function createArticle(data: ArticleFormData): Promise<Article> {
   const res = await api.post("/articles", data);
   return res.data;
@@ -68,9 +61,9 @@ export async function createArticle(data: ArticleFormData): Promise<Article> {
 
 export async function updateArticle(
   id: string,
-  data: ArticleUpdateData
+  data: ArticleFormData
 ): Promise<Article> {
-  // Only send the 3 required fields
+  // Only send the required fields
   const updateData = {
     title: data.title,
     content: data.content,
@@ -256,6 +249,11 @@ export const articlesApi = {
   getCategories,
 };
 
+export async function getCategoryById(id: string): Promise<Category> {
+  const res = await api.get(`/categories/${id}`);
+  return res.data;
+}
+
 export async function createCategory(
   data: CategoryFormData
 ): Promise<Category> {
@@ -327,87 +325,6 @@ export async function deleteCategory(id: string): Promise<void> {
   }
 }
 
-=======
-// Articles API
-export async function getArticlesPaginated(params?: {
-  page?: number;
-  limit?: number;
-  search?: string;
-  categoryId?: string;
-}) {
-  const searchParams = new URLSearchParams();
-  if (params?.page) searchParams.append("page", params.page.toString());
-  if (params?.limit) searchParams.append("limit", params.limit.toString());
-  if (params?.search) searchParams.append("search", params.search);
-  if (params?.categoryId) searchParams.append("categoryId", params.categoryId);
-  
-  const res = await api.get(`/articles?${searchParams}`);
-  return res.data as PaginatedResponse<Article>;
-}
-
-export async function getArticleById(id: string) {
-  const res = await api.get(`/articles/${id}`);
-  return res.data as Article;
-}
-
-export async function createArticle(data: {
-  title: string;
-  content: string;
-  categoryId: string;
-}) {
-  const res = await api.post("/articles", data);
-  return res.data as Article;
-}
-
-export async function updateArticle(id: string, data: {
-  title: string;
-  content: string;
-  categoryId: string;
-}) {
-  const res = await api.put(`/articles/${id}`, data);
-  return res.data as Article;
-}
-
-export async function deleteArticle(id: string) {
-  const res = await api.delete(`/articles/${id}`);
-  return res.data;
-}
-
-// Categories API
-export async function getCategories(params?: {
-  page?: number;
-  limit?: number;
-  search?: string;
-}) {
-  const searchParams = new URLSearchParams();
-  if (params?.page) searchParams.append("page", params.page.toString());
-  if (params?.limit) searchParams.append("limit", params.limit.toString());
-  if (params?.search) searchParams.append("search", params.search);
-  
-  const res = await api.get(`/categories?${searchParams}`);
-  return res.data as PaginatedResponse<Category>;
-}
-
-export async function getCategoryById(id: string) {
-  const res = await api.get(`/categories/${id}`);
-  return res.data as Category;
-}
-
-export async function createCategory(data: { name: string }) {
-  const res = await api.post("/categories", data);
-  return res.data as Category;
-}
-
-export async function updateCategory(id: string, data: { name: string }) {
-  const res = await api.put(`/categories/${id}`, data);
-  return res.data as Category;
-}
-
-export async function deleteCategory(id: string) {
-  const res = await api.delete(`/categories/${id}`);
-  return res.data;
-}
->>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
 // Authentication API functions
 export async function login(credentials: LoginFormData) {
   const res = await api.post("/auth/login", credentials);

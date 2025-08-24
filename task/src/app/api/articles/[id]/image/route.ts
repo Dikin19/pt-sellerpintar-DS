@@ -9,10 +9,10 @@ import {
 export const PUT = withAdminAuth(
   async (
     request: AuthenticatedRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
   ) => {
     try {
-      const { id } = await params;
+      const { id } = params;
       const token = getTokenFromRequest(request);
       const api = createAuthenticatedApi(token || undefined);
 
