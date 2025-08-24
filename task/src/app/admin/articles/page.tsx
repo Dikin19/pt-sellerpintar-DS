@@ -311,7 +311,6 @@ export default function AdminArticlesPage() {
           open={formDialogOpen}
           onOpenChange={setFormDialogOpen}
           article={selectedArticle}
-          categories={categories}
           onSuccess={handleSuccess}
         />
 
