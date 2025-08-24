@@ -22,7 +22,7 @@ export function ArticleGrid({ articles, isLoading = false }: ArticleGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ gridAutoRows: '1fr' }}>
       {articles.map((article) => (
         <ArticleCard key={article.id} article={article} />
       ))}

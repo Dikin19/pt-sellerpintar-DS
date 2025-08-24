@@ -20,6 +20,7 @@ export default function ArticleDetailPage() {
   const [article, setArticle] = useState<Article | null>(null)
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
+  const [relatedLoading, setRelatedLoading] = useState(false)
 
 
 
@@ -33,15 +34,31 @@ export default function ArticleDetailPage() {
         if (articleData) {
           setArticle(articleData)
 
-          // Fetch related articles from the same category
-          const relatedResponse = await getArticles({
+          // Fetch related articles - prioritize same category first
+          setRelatedLoading(true)
+          let relatedResponse = await getArticles({
             categoryId: articleData.categoryId,
-            limit: 3,
+            limit: 10, // Get more to filter out current article
           })
 
-          // Filter out the current article
-          const related = relatedResponse.data.filter(a => a.id !== articleData.id).slice(0, 3)
+          // Filter out the current article and get first 3
+          let related = relatedResponse.data.filter(a => a.id !== articleData.id).slice(0, 3)
+
+          // If we don't have enough articles in the same category, get more from other categories
+          if (related.length < 3) {
+            const additionalResponse = await getArticles({
+              limit: 10 - related.length,
+            })
+
+            const additionalArticles = additionalResponse.data
+              .filter(a => a.id !== articleData.id && !related.some(r => r.id === a.id))
+              .slice(0, 3 - related.length)
+
+            related = [...related, ...additionalArticles]
+          }
+
           setRelatedArticles(related)
+          setRelatedLoading(false)
         } else {
           router.push("/articles")
         }
@@ -172,57 +189,93 @@ export default function ArticleDetailPage() {
         </article>
 
         {/* Related Articles */}
-        {relatedArticles.length > 0 && (
+        {(relatedArticles.length > 0 || relatedLoading) && (
           <section className="mt-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {relatedArticles.map((relatedArticle) => {
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-                  relatedArticle.title
-                )}%20app%20logo?width=500&height=300&nologo=true`
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">You Might Also Like</h2>
+              <p className="text-gray-600">Discover more interesting articles</p>
+            </div>
 
-                return (
-                  <Card
-                    key={relatedArticle.id}
-                    className="group hover:shadow-xl transition-shadow flex flex-col h-full"
-                  >
-                    <CardHeader className="p-0">
-                      <div className="flex items-center gap-2 px-4 pt-4">
-                        <Badge variant="secondary" className="text-xs">
-                          {relatedArticle.category.name}
-                        </Badge>
-                      </div>
+            {relatedLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-96 bg-gray-200 animate-pulse rounded-lg"></div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" style={{ gridAutoRows: '1fr' }}>
+                {relatedArticles.map((relatedArticle) => {
+                  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+                    relatedArticle.title
+                  )}%20app%20logo?width=500&height=300&nologo=true`
 
-                      <div className="overflow-hidden mt-2">
+                  return (
+                    <Card
+                      key={relatedArticle.id}
+                      className="group h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-md bg-white overflow-hidden flex flex-col"
+                    >
+                      {/* Image Container */}
+                      <div className="relative overflow-hidden h-48">
                         <Image
                           src={imageUrl}
                           alt={relatedArticle.title}
                           width={500}
                           height={300}
-                          className="w-full h-48 object-cover rounded-t-xl transition-transform duration-300 group-hover:scale-105"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
+                        <div className="absolute top-3 left-3">
+                          <Badge variant="secondary" className="bg-white/95 text-gray-700 font-medium shadow-sm">
+                            {relatedArticle.category.name}
+                          </Badge>
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
 
-                      <CardTitle className="text-lg font-semibold px-4 py-2 group-hover:text-primary transition-colors">
-                        <Link href={`/articles/${relatedArticle.id}`}>
-                          {relatedArticle.title}
-                        </Link>
-                      </CardTitle>
-                    </CardHeader>
+                      {/* Content Container */}
+                      <div className="flex flex-col flex-1 p-4">
+                        {/* Title */}
+                        <h3 className="text-lg leading-tight font-bold text-gray-900 mb-3 min-h-[3.5rem] flex items-start">
+                          <Link
+                            href={`/articles/${relatedArticle.id}`}
+                            className="hover:text-blue-600 transition-colors duration-200 line-clamp-2"
+                          >
+                            {relatedArticle.title}
+                          </Link>
+                        </h3>
 
-                    <CardContent className="flex flex-col flex-1 px-4 pb-4">
-                      <p className="text-sm text-muted-foreground line-clamp-3">
-                        {relatedArticle.content.slice(0, 150)}...
-                      </p>
-                      <div className="mt-auto flex items-center justify-between text-xs text-muted-foreground pt-4">
-                        <span>{relatedArticle.user.username}</span>
-                        <span>{formatDate(relatedArticle.createdAt)}</span>
+                        {/* Content Preview */}
+                        <p className="text-gray-600 text-sm mb-4 flex-1 min-h-[4rem] line-clamp-3">
+                          {relatedArticle.content.slice(0, 100).trim()}...
+                        </p>
+
+                        {/* Footer */}
+                        <div className="mt-auto">
+                          <div className="flex items-center justify-between text-xs text-gray-500 pb-3 border-t border-gray-100">
+                            <div className="flex items-center space-x-1">
+                              <User className="h-3 w-3" />
+                              <span className="font-medium">{relatedArticle.user.username}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <Calendar className="h-3 w-3" />
+                              <span>{formatDate(relatedArticle.createdAt)}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-end pt-3">
+                            <Link
+                              href={`/articles/${relatedArticle.id}`}
+                              className="inline-flex items-center text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 group-hover:translate-x-1"
+                            >
+                              Read More →
+                            </Link>
+                          </div>
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
-            </div>
+                    </Card>
+                  )
+                })}
+              </div>
+            )}
           </section>
         )}
       </main>
