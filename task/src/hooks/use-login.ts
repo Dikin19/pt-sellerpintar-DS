@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { login } from "@/lib/api";
 import { type LoginFormData } from "@/lib/validations";
 import { useAuth } from "@/contexts/auth-context";
+import { getRoleBasedRedirectPath } from "@/lib/role-utils";
 
 interface UseLoginReturn {
   loginUser: (data: LoginFormData) => Promise<void>;
@@ -28,18 +29,68 @@ export function useLogin(): UseLoginReturn {
       // Call the login API
       const response = await login(data);
 
-      // Handle successful login
-      if (response.success && response.token && response.user) {
-        // Use auth context to set authentication state
-        contextLogin(response.token, response.user);
+      // Debug logging
+      console.log("Login API Response:", response);
+      console.log("Response structure:", {
+        success: response.success,
+        token: response.token,
+        user: response.user,
+        role: response.role,
+        keys: Object.keys(response),
+      });
 
-        // Show success message (you can add a toast library later)
+      // Check if response might be nested under data property
+      const actualResponse = response.data || response;
+      console.log("Actual response after checking .data:", actualResponse);
+
+      // Handle the actual response format: {token, role}
+      const token = response.token || actualResponse.token;
+      const role = response.role || actualResponse.role;
+
+      if (token && role) {
+        // Decode user ID from JWT token
+        let userId = "user-id";
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          userId = payload.userId || "user-id";
+        } catch (e) {
+          console.warn("Could not decode JWT token:", e);
+        }
+
+        // Create user object from the response
+        const user = {
+          id: userId,
+          username: data.username, // Use the username from login form
+          role: role as "Admin" | "User",
+          email: "", // This could be decoded from JWT or fetched separately
+        };
+
+        console.log("Using token:", !!token, "and user:", user);
+
+        // Use auth context to set authentication state
+        contextLogin(token, user);
+
+        // Show success message
         console.log("Login successful!");
 
-        // Redirect to dashboard or home page
-        router.push("/dashboard");
+        // Redirect based on user role
+        const redirectPath = getRoleBasedRedirectPath(user.role);
+        console.log("Redirecting to:", redirectPath);
+
+        // Small delay to ensure auth state is updated
+        setTimeout(() => {
+          router.push(redirectPath);
+        }, 100);
       } else {
-        setError(response.message || "Login failed");
+        console.log("Login failed - missing required fields:", {
+          token: !!token,
+          role: !!role,
+        });
+        setError(
+          response.message ||
+            actualResponse.message ||
+            "Login failed - missing token or role"
+        );
       }
     } catch (error: any) {
       console.error("Login error:", error);

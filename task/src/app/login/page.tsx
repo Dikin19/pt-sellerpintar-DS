@@ -3,7 +3,6 @@
 import React from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { useLogin } from "@/hooks/use-login";
-import { Card } from "@/components/ui/card";
 
 export default function LoginPage() {
     const { loginUser, isLoading, error, clearError } = useLogin();
