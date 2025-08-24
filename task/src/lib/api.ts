@@ -459,6 +459,21 @@ export async function login(credentials: LoginFormData) {
       const { status, data } = error.response;
       console.log(`Login failed with status ${status}:`, data);
 
+      // Create a more descriptive error
+      const enhancedError: any = new Error(
+        data.message || `Login failed with status ${status}`
+      );
+      enhancedError.response = error.response;
+      enhancedError.status = status;
+      throw enhancedError;
+    } else if (error.request) {
+      // Network error
+      console.log("Login network error:", error.request);
+      const networkError: any = new Error(
+        "Network error. Please check your connection."
+      );
+      networkError.isNetworkError = true;
+      throw networkError;
     } else {
       // Other error
       console.log("Login error:", error.message);
@@ -477,6 +492,22 @@ export async function register(userData: RegisterFormData) {
       // Server responded with error status
       const { status, data } = error.response;
       console.log(`Registration failed with status ${status}:`, data);
+
+      // Create a more descriptive error
+      const enhancedError: any = new Error(
+        data.message || `Registration failed with status ${status}`
+      );
+      enhancedError.response = error.response;
+      enhancedError.status = status;
+      throw enhancedError;
+    } else if (error.request) {
+      // Network error
+      console.log("Registration network error:", error.request);
+      const networkError: any = new Error(
+        "Network error. Please check your connection."
+      );
+      networkError.isNetworkError = true;
+      throw networkError;
     } else {
       // Other error
       console.log("Registration error:", error.message);

@@ -100,20 +100,24 @@ export function useLogin(): UseLoginReturn {
       }
     } catch (error: any) {
       // Only log relevant details, not the full error stack for known errors
-      if (error.status === 401) {
+      if (error.status === 400) {
+        console.log("Login failed: Bad request - Invalid data format");
+      } else if (error.status === 401) {
         console.log("Authentication failed: Invalid credentials");
       } else if (error.status >= 500) {
         console.log("Server error during login:", error.status);
       } else if (error.isNetworkError) {
         console.log("Network error during login");
       } else {
-        console.error("Unexpected login error:", error);
+        console.log("Unexpected login error:", error.status || "Unknown error");
       }
 
       // Handle different types of errors with user-friendly messages
       let errorMessage = "An unexpected error occurred. Please try again.";
 
-      if (error.status === 401) {
+      if (error.status === 400) {
+        errorMessage = "Invalid data format. Please check your input.";
+      } else if (error.status === 401) {
         errorMessage = "Invalid username or password";
       } else if (error.status === 422) {
         errorMessage = "Invalid data provided";

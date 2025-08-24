@@ -19,7 +19,7 @@ export default function RegisterForm() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isValid },
+        formState: { errors, isSubmitting },
     } = useForm<RegisterFormData>({
         resolver: zodResolver(registerFormSchema),
         mode: 'onChange',
@@ -54,7 +54,7 @@ export default function RegisterForm() {
 
         } catch (error) {
             // Error sudah di-handle di hook
-            console.error('Registration failed:', error)
+            // console.error('Registration failed:', error)
             showErrorToast('Registration failed. Please check your information and try again.');
         }
     }
@@ -148,11 +148,8 @@ export default function RegisterForm() {
                     {/* Submit Button */}
                     <Button
                         type="submit"
-                        disabled={isLoading || !isValid}
-                        className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${isLoading || !isValid
-                            ? 'bg-white-400 cursor-not-allowed text-black-700'
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                            }`}
+                        disabled={isLoading || isSubmitting}
+                        className={`w-full py-2 px-4 rounded-md font-medium transition-colors bg-blue-600 hover:bg-blue-700 text-white`}
                         onClick={() => {
                             // Display form errors if there are any
                             setTimeout(() => {

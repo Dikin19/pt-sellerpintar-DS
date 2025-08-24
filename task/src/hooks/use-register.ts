@@ -46,17 +46,22 @@ export const useRegister = (): UseRegisterReturn => {
       setSuccess(successMessage);
 
       // Also show a separate success toast for better visibility
-      showSuccessToast(`Welcome! ${successMessage}`);
+      // showSuccessToast(`Welcome! ${successMessage}`);
     } catch (err: any) {
       // Log minimal info for debugging without cluttering console
-      if (err.response?.status === 409) {
+      if (err.response?.status === 400) {
+        console.log("Registration failed: Bad request - Invalid data format");
+      } else if (err.response?.status === 409) {
         console.log("Registration failed: Username already exists");
       } else if (err.response?.status === 422) {
         console.log("Registration failed: Invalid data");
       } else if (err.response?.status >= 500) {
         console.log("Registration failed: Server error", err.response?.status);
       } else {
-        console.error("Unexpected registration error:", err);
+        console.log(
+          "Unexpected registration error:",
+          err.response?.status || "Network error"
+        );
       }
 
       let errorMessage = "Registration failed. Please try again.";
@@ -70,7 +75,10 @@ export const useRegister = (): UseRegisterReturn => {
       }
 
       // Handle specific error cases with user-friendly messages
-      if (err.response?.status === 409) {
+      if (err.response?.status === 400) {
+        errorMessage =
+          "Invalid data format. Please check your input and try again.";
+      } else if (err.response?.status === 409) {
         errorMessage =
           "Username already exists. Please choose a different username.";
       } else if (err.response?.status === 422) {
