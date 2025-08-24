@@ -22,22 +22,42 @@ const navigation = [
 
 export function AdminSidebar() {
   const pathname = usePathname()
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
+
+  const pollinationsUrl = user
+    ? `https://image.pollinations.ai/prompt/${encodeURIComponent(
+      user.username
+    )}%20app%20logo?width=200&height=200&nologo=true`
+    : null
 
   return (
     <div className="flex h-screen w-64 flex-col bg-blue-600 text-white">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-blue-500">
-        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-          <span className="text-blue-600 font-bold text-sm">L</span>
+      {/* Logo & Brand */}
+      <div className="flex flex-col items-center gap-2 px-4 py-6 border-b border-blue-500">
+        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden shadow-md">
+          {pollinationsUrl ? (
+            <img
+              src={pollinationsUrl}
+              alt="App Logo"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-xs text-gray-500">N/A</span>
+          )}
         </div>
-        <span className="font-semibold text-lg">Logoipsum</span>
+        <span className="font-semibold text-center text-sm">
+          Seller Pintar Digital Asia
+        </span>
+        {user && <span className="text-xs text-blue-100">Hi, {user.username}</span>}
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2">
         <Link href="/admin">
-          <Button variant="ghost" className="w-full justify-start text-white hover:bg-blue-500 hover:text-white">
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-white hover:bg-blue-500 hover:text-white"
+          >
             <Home className="mr-3 h-5 w-5" />
             Back to Site
           </Button>
@@ -51,7 +71,7 @@ export function AdminSidebar() {
                 variant="ghost"
                 className={cn(
                   "w-full justify-start text-white hover:bg-blue-500 hover:text-white",
-                  isActive && "bg-blue-500",
+                  isActive && "bg-blue-700"
                 )}
               >
                 <item.icon className="mr-3 h-5 w-5" />

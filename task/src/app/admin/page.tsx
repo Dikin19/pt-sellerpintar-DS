@@ -203,7 +203,7 @@ export default function AdminPage() {
     )}%20app%20logo?width=500&height=500&nologo=true`
     : null
 
-  return (
+    return (
     <RoleGuard allowedRoles={["Admin", "User"]}>
       <div className="min-h-screen bg-background">
         <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
@@ -258,7 +258,7 @@ export default function AdminPage() {
                 {!isAdmin() && (
                   <span className="block text-sm mt-2 text-blue-200">
                     <Shield className="inline h-4 w-4 mr-1" />
-                    You have read-only access to articles and categories
+                    You have read-only access to articles
                   </span>
                 )}
               </p>
@@ -270,12 +270,6 @@ export default function AdminPage() {
         <main className="container mx-auto px-4 py-8">
           {/* Role-based Welcome Banner */}
           <RoleWelcomeBanner />
-
-          <div className="mb-6">
-            <p className="text-muted-foreground">
-              Showing: {pagination.total} of {pagination.total} articles
-            </p>
-          </div>
 
           {/* Filters dengan debounce 400ms */}
           <ArticleFilters
