@@ -82,6 +82,7 @@ export const registerFormSchema = z.object({
   role: roleSchema,
 });
 
+<<<<<<< HEAD
 export const articleFormSchema = z.object({
   title: articleTitleSchema,
   excerpt: articleExcerptSchema,
@@ -114,10 +115,42 @@ export const paginationSchema = z.object({
   limit: z.number().min(1).max(100).default(10),
 });
 
+=======
+// Article validation schemas
+export const articleFormSchema = z.object({
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(200, "Title must be less than 200 characters"),
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .max(10000, "Content must be less than 10000 characters"),
+  categoryId: z
+    .string()
+    .min(1, "Category is required"),
+});
+
+// Category validation schemas
+export const categoryFormSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Category name is required")
+    .max(100, "Category name must be less than 100 characters")
+    .regex(
+      /^[a-zA-Z0-9\s\-_]+$/,
+      "Category name can only contain letters, numbers, spaces, hyphens, and underscores"
+    ),
+});
+>>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
 // Type inference
 export type LoginFormData = z.infer<typeof loginFormSchema>;
 export type RegisterFormData = z.infer<typeof registerFormSchema>;
 export type ArticleFormData = z.infer<typeof articleFormSchema>;
+<<<<<<< HEAD
 export type ArticleUpdateData = z.infer<typeof articleUpdateSchema>;
 export type CategoryFormData = z.infer<typeof categoryFormSchema>;
 export type PaginationData = z.infer<typeof paginationSchema>;
+=======
+export type CategoryFormData = z.infer<typeof categoryFormSchema>;
+>>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60

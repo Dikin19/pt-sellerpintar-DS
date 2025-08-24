@@ -83,6 +83,7 @@ export const GET = withUserAuth(async (request: AuthenticatedRequest) => {
       { status: error.response?.status || 500 }
     );
   }
+<<<<<<< HEAD
 });
 
 // POST - Only accessible by Admin
@@ -91,6 +92,15 @@ export const POST = withAdminAuth(async (request: AuthenticatedRequest) => {
     const token = getTokenFromRequest(request);
     const api = createAuthenticatedApi(token || undefined);
 
+=======
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const token = getTokenFromRequest(request);
+    const api = createAuthenticatedApi(token || undefined);
+    
+>>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
     const body = await request.json();
 
     if (!body.title || !body.content || !body.categoryId) {
@@ -105,7 +115,10 @@ export const POST = withAdminAuth(async (request: AuthenticatedRequest) => {
       content: body.content,
       categoryId: body.categoryId,
     });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
     return NextResponse.json(res.data);
   } catch (error: any) {
     console.error("Create article error:", error);
@@ -119,4 +132,8 @@ export const POST = withAdminAuth(async (request: AuthenticatedRequest) => {
       { status: error.response?.status || 500 }
     );
   }
+<<<<<<< HEAD
 });
+=======
+}
+>>>>>>> 217b6e120a965a6d984dee0f3222aea329e90b60
