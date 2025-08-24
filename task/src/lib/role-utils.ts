@@ -94,7 +94,7 @@ export function getRoleWelcomeMessage(role: UserRole): string {
     case "Admin":
       return "Welcome to Admin Dashboard! You have full access to manage all content.";
     case "User":
-      return "Welcome! You can browse and read all articles. Some features require admin access.";
+      return "Welcome! Discover the latest insights and exclusive articles to expand your knowledge.";
     default:
       return "Welcome to the application!";
   }
@@ -128,7 +128,7 @@ export function getRoleNavigationHint(role: UserRole): string {
     case "Admin":
       return "You can manage all content, create new articles, and configure categories.";
     case "User":
-      return "You can browse articles, view details, and search content. Contact admin for edit access.";
+      return "You can browse articles, view details, and search content.";
     default:
       return "Navigate through the available content.";
   }

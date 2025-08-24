@@ -203,7 +203,7 @@ export default function AdminPage() {
     )}%20app%20logo?width=500&height=500&nologo=true`
     : null
 
-    return (
+  return (
     <RoleGuard allowedRoles={["Admin", "User"]}>
       <div className="min-h-screen bg-background">
         <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
@@ -274,21 +274,6 @@ export default function AdminPage() {
           <div className="mb-6">
             <p className="text-muted-foreground">
               Showing: {pagination.total} of {pagination.total} articles
-              {filters.search && (
-                <span className="ml-2 text-sm text-blue-600">
-                  (filtered by: "{filters.search}")
-                </span>
-              )}
-              {filters.categoryId && (
-                <span className="ml-2 text-sm text-green-600">
-                  (category filtered)
-                </span>
-              )}
-              {!isAdmin() && (
-                <span className="ml-2 text-sm text-orange-600">
-                  (Read-only mode - User access)
-                </span>
-              )}
             </p>
           </div>
 
