@@ -5,6 +5,11 @@ import { login } from "@/lib/api";
 import { type LoginFormData } from "@/lib/validations";
 import { useAuth } from "@/contexts/auth-context";
 import { getRoleBasedRedirectPath } from "@/lib/role-utils";
+import {
+  showSuccessToast,
+  showErrorToast,
+  showPromiseToast,
+} from "@/lib/toast-utils";
 
 interface UseLoginReturn {
   loginUser: (data: LoginFormData) => Promise<void>;
@@ -71,7 +76,7 @@ export function useLogin(): UseLoginReturn {
         contextLogin(token, user);
 
         // Show success message
-        console.log("Login successful!");
+        showSuccessToast("Login successful!");
 
         // Redirect based on user role
         const redirectPath = getRoleBasedRedirectPath(user.role);
@@ -80,33 +85,50 @@ export function useLogin(): UseLoginReturn {
         // Small delay to ensure auth state is updated
         setTimeout(() => {
           router.push(redirectPath);
-        }, 100);
+        }, 1000);
       } else {
         console.log("Login failed - missing required fields:", {
           token: !!token,
           role: !!role,
         });
-        setError(
+        const errorMessage =
           response.message ||
-            actualResponse.message ||
-            "Login failed - missing token or role"
-        );
+          actualResponse.message ||
+          "Login failed - missing token or role";
+        setError(errorMessage);
+        showErrorToast(errorMessage);
       }
     } catch (error: any) {
-      console.error("Login error:", error);
-
-      // Handle different types of errors
-      if (error.response?.status === 401) {
-        setError("Invalid username or password");
-      } else if (error.response?.status === 429) {
-        setError("Too many login attempts. Please try again later.");
-      } else if (error.response?.status >= 500) {
-        setError("Server error. Please try again later.");
-      } else if (error.message) {
-        setError(error.message);
+      // Only log relevant details, not the full error stack for known errors
+      if (error.status === 401) {
+        console.log("Authentication failed: Invalid credentials");
+      } else if (error.status >= 500) {
+        console.log("Server error during login:", error.status);
+      } else if (error.isNetworkError) {
+        console.log("Network error during login");
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        console.error("Unexpected login error:", error);
       }
+
+      // Handle different types of errors with user-friendly messages
+      let errorMessage = "An unexpected error occurred. Please try again.";
+
+      if (error.status === 401) {
+        errorMessage = "Invalid username or password";
+      } else if (error.status === 422) {
+        errorMessage = "Invalid data provided";
+      } else if (error.status === 429) {
+        errorMessage = "Too many login attempts. Please try again later.";
+      } else if (error.status >= 500) {
+        errorMessage = "Server error. Please try again later.";
+      } else if (error.isNetworkError) {
+        errorMessage = "Network error. Please check your connection.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setError(errorMessage);
+      showErrorToast(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +140,9 @@ export function useLogin(): UseLoginReturn {
     error,
     clearError,
   };
-} // Alternative hook for more advanced authentication patterns
+}
+
+// Alternative hook for more advanced authentication patterns
 export function useAuthLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -142,9 +166,12 @@ export function useAuthLogin() {
         throw new Error(data.message || "Login failed");
       }
 
+      showSuccessToast("Login successful!");
       return data;
     } catch (error: any) {
-      setError(error.message);
+      const errorMessage = error.message || "Login failed";
+      setError(errorMessage);
+      showErrorToast(errorMessage);
       throw error;
     } finally {
       setIsLoading(false);

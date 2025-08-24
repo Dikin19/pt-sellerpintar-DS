@@ -3,6 +3,8 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registerFormSchema, type RegisterFormData } from '@/lib/validations'
+import { validateRegisterForm, displayValidationResults, displayFormErrors } from '@/lib/form-validation'
+import { showSuccessToast, showErrorToast } from '@/lib/toast-utils'
 import { useRegister } from '@/hooks/use-register'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
@@ -30,6 +32,20 @@ export default function RegisterForm() {
 
     const onSubmit = async (data: RegisterFormData) => {
         try {
+            // Client-side validation with enhanced checks
+            const validationResult = validateRegisterForm(data);
+
+            // Display validation results
+            if (!validationResult.isValid) {
+                displayValidationResults(validationResult);
+                return;
+            }
+
+            // Display warnings if any (non-blocking)
+            if (validationResult.warnings.length > 0) {
+                displayValidationResults(validationResult, true);
+            }
+
             await registerUser({
                 username: data.username,
                 password: data.password,
@@ -39,6 +55,7 @@ export default function RegisterForm() {
         } catch (error) {
             // Error sudah di-handle di hook
             console.error('Registration failed:', error)
+            showErrorToast('Registration failed. Please check your information and try again.');
         }
     }
 
@@ -136,6 +153,14 @@ export default function RegisterForm() {
                             ? 'bg-white-400 cursor-not-allowed text-black-700'
                             : 'bg-blue-600 hover:bg-blue-700 text-white'
                             }`}
+                        onClick={() => {
+                            // Display form errors if there are any
+                            setTimeout(() => {
+                                if (Object.keys(errors).length > 0) {
+                                    displayFormErrors(errors);
+                                }
+                            }, 100);
+                        }}
                     >
                         {isLoading ? (
                             <span className="flex items-center justify-center">

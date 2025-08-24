@@ -9,15 +9,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { loginFormSchema, type LoginFormData } from "@/lib/validations";
+import { validateLoginForm, displayValidationResults, displayFormErrors } from "@/lib/form-validation";
+import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
 import Link from "next/link";
 
 interface LoginFormProps {
     onSubmit?: (data: LoginFormData) => Promise<void> | void;
     isLoading?: boolean;
     error?: string | null;
+    clearError?: () => void;
 }
 
-export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps) {
+export function LoginForm({ onSubmit, isLoading = false, error, clearError }: LoginFormProps) {
     const [showPassword, setShowPassword] = useState(false);
 
     const {
@@ -35,13 +38,29 @@ export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps
 
     const handleFormSubmit = async (data: LoginFormData) => {
         try {
+            // Client-side validation with enhanced checks
+            const validationResult = validateLoginForm(data);
+
+            // Display validation results
+            if (!validationResult.isValid) {
+                displayValidationResults(validationResult);
+                return;
+            }
+
+            // Display warnings if any (non-blocking)
+            if (validationResult.warnings.length > 0) {
+                displayValidationResults(validationResult, true);
+            }
+
             if (onSubmit) {
                 await onSubmit(data);
                 // Reset form on successful submission
                 reset();
+                // showSuccessToast("Login form submitted successfully!");
             }
         } catch (error) {
-            console.error("Login failed:", error);
+            // console.error("Login failed:", error);
+            showErrorToast("Login failed. Please try again.");
         }
     };
 
@@ -72,9 +91,16 @@ export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps
                             id="username"
                             type="text"
                             placeholder="Enter your username"
-                            {...register("username")}
-                            aria-invalid={errors.username ? "true" : "false"}
-                            className={errors.username ? "border-red-500 focus:ring-red-500" : ""}
+                            {...register("username", {
+                                onChange: (e) => {
+                                    // Clear previous errors when user starts typing
+                                    if (errors.username && clearError) {
+                                        clearError();
+                                    }
+                                }
+                            })}
+                            // aria-invalid={errors.username ? "true" : "false"}
+                            // className={errors.username ? "border-red-500 focus:ring-red-500" : ""}
                         />
                         {errors.username && (
                             <p className="text-sm text-red-600" role="alert">
@@ -91,9 +117,16 @@ export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps
                                 id="password"
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Enter your password"
-                                {...register("password")}
-                                aria-invalid={errors.password ? "true" : "false"}
-                                className={`pr-10 ${errors.password ? "border-red-500 focus:ring-red-500" : ""}`}
+                                {...register("password", {
+                                    onChange: (e) => {
+                                        // Clear previous errors when user starts typing
+                                        if (errors.password && clearError) {
+                                            clearError();
+                                        }
+                                    }
+                                })}
+                                // aria-invalid={errors.password ? "true" : "false"}
+                                // className={`pr-10 ${errors.password ? "border-red-500 focus:ring-red-500" : ""}`}
                             />
                             <button
                                 type="button"
@@ -121,6 +154,14 @@ export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps
                         type="submit"
                         className="w-full"
                         disabled={isSubmitting || isLoading}
+                        onClick={() => {
+                            // Display form errors if there are any
+                            setTimeout(() => {
+                                if (Object.keys(errors).length > 0) {
+                                    displayFormErrors(errors);
+                                }
+                            }, 100);
+                        }}
                     >
                         {(isSubmitting || isLoading) ? (
                             <>

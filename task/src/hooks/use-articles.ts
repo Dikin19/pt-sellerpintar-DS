@@ -57,6 +57,12 @@ export function useArticles(params?: UseArticlesParams) {
         });
         return response;
       } catch (err: any) {
+        // Log minimal info for debugging
+        console.log(
+          "Failed to fetch articles:",
+          err.response?.status || "Network error"
+        );
+
         const errorMessage =
           err.response?.data?.message ||
           err.message ||
@@ -92,6 +98,12 @@ export function useArticles(params?: UseArticlesParams) {
         setArticles((prev) => [newArticle, ...prev]);
         return newArticle;
       } catch (err: any) {
+        // Log minimal info for debugging
+        console.log(
+          "Failed to create article:",
+          err.response?.status || "Network error"
+        );
+
         const errorMessage =
           err.response?.data?.message ||
           err.message ||
@@ -116,6 +128,12 @@ export function useArticles(params?: UseArticlesParams) {
         );
         return updatedArticle;
       } catch (err: any) {
+        // Log minimal info for debugging
+        console.log(
+          "Failed to update article:",
+          err.response?.status || "Network error"
+        );
+
         const errorMessage =
           err.response?.data?.message ||
           err.message ||
@@ -139,6 +157,12 @@ export function useArticles(params?: UseArticlesParams) {
         setPagination((prev) => ({ ...prev, total: prev.total - 1 }));
         return true;
       } catch (err: any) {
+        // Log minimal info for debugging
+        console.log(
+          "Failed to delete article:",
+          err.response?.status || "Network error"
+        );
+
         const errorMessage =
           err.response?.data?.message ||
           err.message ||

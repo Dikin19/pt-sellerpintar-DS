@@ -70,7 +70,11 @@ export function useCategories(params: UseCategoriesParams = {}) {
         limit: response.pagination?.limit || params.limit || 10,
       });
     } catch (err: any) {
-      console.error("fetchCategories error:", err);
+      // Log minimal info for debugging
+      console.log(
+        "Failed to fetch categories:",
+        err.response?.status || "Network error"
+      );
       setError(err.response?.data?.message || "Failed to fetch categories");
     } finally {
       setLoading(false);
@@ -93,7 +97,11 @@ export function useCategories(params: UseCategoriesParams = {}) {
       );
       setPagination((prev) => ({ ...prev, total: prev.total - 1 }));
     } catch (err: any) {
-      console.error("removeCategory error in hook:", err);
+      // Log minimal info for debugging
+      console.log(
+        "Failed to delete category:",
+        err.response?.status || "Network error"
+      );
       throw new Error(
         err.message ||
           err.response?.data?.message ||

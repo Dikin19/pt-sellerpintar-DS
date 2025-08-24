@@ -5,7 +5,7 @@ import { LoginForm } from "@/components/auth/login-form";
 import { useLogin } from "@/hooks/use-login";
 
 export default function LoginPage() {
-    
+
     const { loginUser, isLoading, error, clearError } = useLogin();
 
     React.useEffect(() => {
@@ -30,6 +30,7 @@ export default function LoginPage() {
                         onSubmit={loginUser}
                         isLoading={isLoading}
                         error={error}
+                        clearError={clearError}
                     />
                 </div>
             </div>

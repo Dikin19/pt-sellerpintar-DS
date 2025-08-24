@@ -449,13 +449,40 @@ export async function deleteCategory(id: string): Promise<void> {
 
 // Authentication API functions
 export async function login(credentials: LoginFormData) {
-  const res = await api.post("/auth/login", credentials);
-  return res.data;
+  try {
+    const res = await api.post("/auth/login", credentials);
+    return res.data;
+  } catch (error: any) {
+    // Add more context to the error for better debugging
+    if (error.response) {
+      // Server responded with error status
+      const { status, data } = error.response;
+      console.log(`Login failed with status ${status}:`, data);
+
+    } else {
+      // Other error
+      console.log("Login error:", error.message);
+      throw error;
+    }
+  }
 }
 
 export async function register(userData: RegisterFormData) {
-  const res = await api.post("/auth/register", userData);
-  return res.data;
+  try {
+    const res = await api.post("/auth/register", userData);
+    return res.data;
+  } catch (error: any) {
+    // Add more context to the error for better debugging
+    if (error.response) {
+      // Server responded with error status
+      const { status, data } = error.response;
+      console.log(`Registration failed with status ${status}:`, data);
+    } else {
+      // Other error
+      console.log("Registration error:", error.message);
+      throw error;
+    }
+  }
 }
 
 export async function logout() {
