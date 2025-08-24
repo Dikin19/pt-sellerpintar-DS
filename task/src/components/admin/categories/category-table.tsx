@@ -45,21 +45,12 @@ export function CategoryTable({ categories, onEdit, onDelete }: CategoryTablePro
                     {categories
                         .filter(category => {
                             // Filter out categories without valid IDs
-                            const hasValidId = category.id || (category as any)._id || (category as any).categoryId;
-                            if (!hasValidId) {
-                                console.warn("Filtering out category without valid ID:", category);
-                            }
-                            return hasValidId;
+                            const hasValidId = category.id;
+                            return hasValidId && category.name;
                         })
                         .map((category) => {
-                            console.log("Rendering category in table:", category);
-                            console.log("Category ID in table:", category.id);
-
-                            // Ensure we have a valid key for React
-                            const categoryKey = category.id || (category as any)._id || (category as any).categoryId || Math.random();
-
                             return (
-                                <TableRow key={categoryKey}>
+                                <TableRow key={category.id}>
                                     <TableCell>
                                         <p className="font-medium text-sm">{category.name}</p>
                                     </TableCell>

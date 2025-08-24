@@ -13,7 +13,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { deleteCategory } from "@/lib/api"
 import type { Category } from "@/lib/type"
+import { logCategoryDebugInfo } from "@/lib/category-utils"
 import { Loader2 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface DeleteCategoryDialogProps {
   open: boolean
@@ -24,18 +26,49 @@ interface DeleteCategoryDialogProps {
 
 export function DeleteCategoryDialog({ open, onOpenChange, category, onSuccess }: DeleteCategoryDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false)
+  const { toast } = useToast()
 
   const handleDelete = async () => {
     if (!category) return
 
     setIsDeleting(true)
     try {
+      // Log details for debugging
+      console.log("Deleting category:", {
+        id: category.id,
+        name: category.name,
+        category: category,
+        idType: typeof category.id,
+      });
+
+      logCategoryDebugInfo(category, "Before delete");
+
       await deleteCategory(category.id)
+      toast({
+        title: "Success",
+        description: "Category deleted successfully",
+      })
       onSuccess()
       onOpenChange(false)
-    } catch (error) {
+    } catch (error: any) {
       console.error("Delete category error:", error)
-      // Handle error appropriately
+
+      // Show more specific error messages
+      let errorMessage = "Failed to delete category";
+
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      })
     } finally {
       setIsDeleting(false)
     }

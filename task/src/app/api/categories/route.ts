@@ -35,6 +35,10 @@ export const GET = withUserAuth(async (request: AuthenticatedRequest) => {
 
     const apiUrl = `/categories?${queryParams.toString()}`;
     console.log("Final API URL:", apiUrl);
+    console.log(
+      "Making request to external API:",
+      "https://test-fe.mysellerpintar.com/api" + apiUrl
+    );
 
     const res = await api.get(apiUrl);
 

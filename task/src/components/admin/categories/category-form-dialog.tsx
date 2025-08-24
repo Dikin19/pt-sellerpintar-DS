@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label"
 import { categoryFormSchema, type CategoryFormData } from "@/lib/validations"
 import { createCategory, updateCategory } from "@/lib/api"
 import type { Category } from "@/lib/type"
+import { logCategoryDebugInfo } from "@/lib/category-utils"
 import { Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -35,21 +36,25 @@ export function CategoryFormDialog({ open, onOpenChange, category, onSuccess }: 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, isDirty },
     reset,
     setValue,
+    watch,
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categoryFormSchema),
     defaultValues: {
       name: "",
     },
+    mode: "onChange", // Enable real-time validation
   })
+
+  const watchedName = watch("name")
 
   useEffect(() => {
     if (category) {
-      setValue("name", category.name)
+      setValue("name", category.name, { shouldValidate: true, shouldDirty: true })
     } else {
-      reset()
+      reset({ name: "" })
     }
   }, [category, setValue, reset])
 
@@ -58,46 +63,28 @@ export function CategoryFormDialog({ open, onOpenChange, category, onSuccess }: 
       setIsSubmitting(true)
 
       if (isEditing && category) {
-        console.log("=== CATEGORY EDIT DEBUG ===")
-        console.log("Full category object:", JSON.stringify(category, null, 2))
-        console.log("Category keys:", Object.keys(category))
-        console.log("Category.id:", category.id)
-        console.log("typeof category.id:", typeof category.id)
-        console.log("category.id === undefined:", category.id === undefined)
-        console.log("category.id === null:", category.id === null)
-        console.log("category.id === '':", category.id === "")
-
-        // Check for alternative ID fields
-        const possibleIds = {
-          id: category.id,
-          _id: (category as any)._id,
-          categoryId: (category as any).categoryId,
-          ID: (category as any).ID
-        }
-        console.log("Possible ID fields:", possibleIds)
-
-        // Find the first non-empty ID
-        const categoryId = category.id ||
-          (category as any)._id ||
-          (category as any).categoryId ||
-          (category as any).ID;
-
-        console.log("Selected categoryId:", categoryId)
-        console.log("typeof categoryId:", typeof categoryId)
+        const categoryId = category.id;
 
         if (!categoryId || categoryId.toString().trim() === "") {
-          console.error("ERROR: No valid category ID found!")
-          throw new Error(`Category ID is missing or empty. Available fields: ${Object.keys(category).join(', ')}`)
+          throw new Error("Category ID is missing or empty")
         }
 
-        console.log("Proceeding with update using ID:", categoryId)
+        // Log details for debugging
+        console.log("Updating category:", {
+          id: categoryId,
+          originalCategory: category,
+          updateData: data,
+          categoryType: typeof categoryId,
+        });
+
+        logCategoryDebugInfo(category, "Before update");
+
         await updateCategory(categoryId.toString(), data)
         toast({
           title: "Success",
           description: "Category updated successfully",
         })
       } else {
-        console.log("Creating new category")
         await createCategory(data)
         toast({
           title: "Success",
@@ -110,9 +97,21 @@ export function CategoryFormDialog({ open, onOpenChange, category, onSuccess }: 
       reset()
     } catch (error: any) {
       console.error("Category form error:", error)
+
+      // Show more specific error messages
+      let errorMessage = "Failed to save category";
+
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
       toast({
         title: "Error",
-        description: error.message || "Failed to save category",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -144,9 +143,13 @@ export function CategoryFormDialog({ open, onOpenChange, category, onSuccess }: 
               id="name"
               {...register("name")}
               placeholder="Enter category name"
+              className={errors.name ? "border-red-500" : ""}
             />
             {errors.name && (
               <p className="text-sm text-destructive">{errors.name.message}</p>
+            )}
+            {watchedName && watchedName.trim() && !errors.name && (
+              <p className="text-sm text-green-600">✓ Valid category name</p>
             )}
           </div>
 
@@ -154,7 +157,10 @@ export function CategoryFormDialog({ open, onOpenChange, category, onSuccess }: 
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting || !isValid || (!isDirty && !isEditing)}
+            >
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEditing ? "Update Category" : "Create Category"}
             </Button>

@@ -55,6 +55,11 @@ export const categoryNameSchema = z
   .regex(
     /^[a-zA-Z0-9\s-_]+$/,
     "Category name can only contain letters, numbers, spaces, hyphens, and underscores"
+  )
+  .transform((val) => val.trim()) // Remove leading/trailing whitespace
+  .refine(
+    (val) => val.length > 0,
+    "Category name cannot be empty after trimming"
   );
 
 // Validation utilities

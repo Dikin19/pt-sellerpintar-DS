@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { getCategories, deleteCategory } from '@/lib/api';
-import { Category, PaginatedResponse } from '@/types';
-import { useDebounce } from './use-debounce';
+import { useState, useEffect } from "react";
+import { getCategories, deleteCategory } from "@/lib/api";
+import { Category, PaginatedResponse } from "@/lib/type";
+import { useDebounce } from "./use-debounce";
+import { sanitizeCategoryId, logCategoryDebugInfo } from "@/lib/category-utils";
 
 interface UseCategoriesParams {
   page?: number;
@@ -19,27 +20,58 @@ export function useCategories(params: UseCategoriesParams = {}) {
     limit: 10,
   });
 
-  const debouncedSearch = useDebounce(params.search || '', 400);
+  const debouncedSearch = useDebounce(params.search || "", 400);
 
   const fetchCategories = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
+      console.log("fetchCategories called with params:", {
+        page: params.page || 1,
+        limit: params.limit || 10,
+        search: debouncedSearch,
+      });
+
       const response = await getCategories({
         page: params.page || 1,
         limit: params.limit || 10,
         search: debouncedSearch,
       });
 
+      console.log("fetchCategories response:", {
+        dataLength: response.data?.length,
+        pagination: response.pagination,
+        sampleCategory: response.data?.[0]
+          ? {
+              id: response.data[0].id,
+              name: response.data[0].name,
+              idType: typeof response.data[0].id,
+            }
+          : null,
+      });
+
+      // Validate that all categories have valid IDs
+      const invalidCategories = response.data.filter(
+        (cat) =>
+          !cat.id ||
+          cat.id.toString().trim() === "" ||
+          cat.id.toString().includes("temp_")
+      );
+
+      if (invalidCategories.length > 0) {
+        console.warn("Found categories with invalid IDs:", invalidCategories);
+      }
+
       setCategories(response.data);
       setPagination({
-        total: response.total,
-        page: response.page,
-        limit: response.limit,
+        total: response.pagination?.total || response.total || 0,
+        page: response.pagination?.page || response.page || 1,
+        limit: response.pagination?.limit || params.limit || 10,
       });
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch categories');
+      console.error("fetchCategories error:", err);
+      setError(err.response?.data?.message || "Failed to fetch categories");
     } finally {
       setLoading(false);
     }
@@ -47,11 +79,26 @@ export function useCategories(params: UseCategoriesParams = {}) {
 
   const removeCategory = async (id: string) => {
     try {
-      await deleteCategory(id);
-      setCategories(prev => prev.filter(category => category.id !== id));
-      setPagination(prev => ({ ...prev, total: prev.total - 1 }));
+      console.log("useCategories - removeCategory called with:", {
+        id,
+        type: typeof id,
+      });
+
+      // Use utility function to validate and sanitize ID
+      const sanitizedId = sanitizeCategoryId(id);
+
+      await deleteCategory(sanitizedId);
+      setCategories((prev) =>
+        prev.filter((category) => category.id !== sanitizedId)
+      );
+      setPagination((prev) => ({ ...prev, total: prev.total - 1 }));
     } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to delete category');
+      console.error("removeCategory error in hook:", err);
+      throw new Error(
+        err.message ||
+          err.response?.data?.message ||
+          "Failed to delete category"
+      );
     }
   };
 

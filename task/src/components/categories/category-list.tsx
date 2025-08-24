@@ -73,15 +73,6 @@ export function CategoryList() {
           <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
           <p className="text-gray-600">Total Categories: {pagination.total}</p>
         </div>
-        
-        {user?.role === 'Admin' && (
-          <Link href="/dashboard/categories/create">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Category
-            </Button>
-          </Link>
-        )}
       </div>
 
       {/* Search */}

@@ -12,6 +12,12 @@ import {
   ArticleFilters,
   CategoryFilters,
 } from "./type";
+import {
+  filterValidCategories,
+  sanitizeCategoryId,
+  isProtectedCategory,
+  logCategoryDebugInfo,
+} from "./category-utils";
 
 // Articles API functions
 export async function getArticles(
@@ -99,65 +105,26 @@ export async function getCategories(
 
       // Log each category to check structure
       categories.forEach((cat, index) => {
-        console.log(`Raw category ${index}:`, cat);
-        console.log(`Raw category ${index} keys:`, Object.keys(cat));
-
-        // Check if ID field exists and is valid
-        if (!cat.id && !cat._id && !cat.categoryId) {
-          console.warn(`Category ${index} is missing ID field!`, cat);
-        }
+        logCategoryDebugInfo(cat, `Raw category ${index}`);
       });
 
-      // Filter out empty objects and invalid categories
-      const validCategories = categories.filter((cat: any) => {
-        // Check if category has any meaningful content
-        if (!cat || typeof cat !== "object" || Object.keys(cat).length === 0) {
-          console.warn("Filtering out empty or invalid category:", cat);
-          return false;
-        }
-
-        // Check if category has at least a name field
-        if (!cat.name && !cat.title) {
-          console.warn("Filtering out category without name:", cat);
-          return false;
-        }
-
-        return true;
-      });
+      // Use utility function to filter and validate categories
+      const validCategories = filterValidCategories(categories);
 
       console.log("Valid categories after filtering:", validCategories);
 
-      // Normalize categories to ensure they have an id field
-      const normalizedCategories = validCategories.map((cat: any) => {
-        // If category doesn't have id but has other ID fields, use them
-        if (!cat.id) {
-          if (cat._id) {
-            return { ...cat, id: cat._id };
-          } else if (cat.categoryId) {
-            return { ...cat, id: cat.categoryId };
-          } else {
-            console.warn(
-              "Category missing all possible ID fields, generating temporary ID:",
-              cat
-            );
-            // Generate a temporary ID as fallback (this shouldn't happen in production)
-            return { ...cat, id: `temp_${Date.now()}_${Math.random()}` };
-          }
-        }
-        return cat;
-      });
-
+      // Categories are already validated and normalized by filterValidCategories
       return {
-        data: normalizedCategories,
+        data: validCategories,
         page: filters?.page || 1,
         totalPages: 1,
-        total: normalizedCategories.length,
+        total: validCategories.length,
         pagination: {
           page: filters?.page || 1,
           limit: filters?.limit || 10,
-          total: normalizedCategories.length,
+          total: validCategories.length,
           totalPages: Math.ceil(
-            normalizedCategories.length / (filters?.limit || 10)
+            validCategories.length / (filters?.limit || 10)
           ),
         },
       };
@@ -254,6 +221,35 @@ export async function getCategoryById(id: string): Promise<Category> {
   return res.data;
 }
 
+export async function getCategory(id: string): Promise<Category> {
+  try {
+    console.log("getCategory called with ID:", id);
+
+    // Use utility function to validate and sanitize ID
+    const sanitizedId = sanitizeCategoryId(id);
+
+    const res = await api.get(`/categories/${sanitizedId}`);
+    console.log("getCategory response:", res.data);
+    return res.data;
+  } catch (error: any) {
+    console.error("getCategory error:", error);
+
+    if (error.response?.status === 404) {
+      throw new Error(`Category with ID "${id}" not found`);
+    }
+
+    if (error.response?.status === 403) {
+      throw new Error("You don't have permission to view this category");
+    }
+
+    throw new Error(
+      `Failed to fetch category: ${
+        error.response?.data?.message || error.message
+      }`
+    );
+  }
+}
+
 export async function createCategory(
   data: CategoryFormData
 ): Promise<Category> {
@@ -282,11 +278,19 @@ export async function updateCategory(
   try {
     console.log("updateCategory called with:", { id, data });
 
-    if (!id || id.trim() === "") {
-      throw new Error("Category ID is required and cannot be empty");
+    // Use utility function to validate and sanitize ID
+    const sanitizedId = sanitizeCategoryId(id);
+
+    // Check if this is a protected category
+    if (isProtectedCategory(data.name)) {
+      console.warn("Attempting to update protected category:", {
+        id: sanitizedId,
+        name: data.name,
+      });
     }
 
-    const res = await api.put(`/categories/${id}`, data);
+    console.log("Making PUT request to:", `/categories/${sanitizedId}`);
+    const res = await api.put(`/categories/${sanitizedId}`, data);
     console.log("updateCategory response:", res.data);
     return res.data;
   } catch (error: any) {
@@ -295,12 +299,60 @@ export async function updateCategory(
     console.error("Error status:", error.response?.status);
     console.error("Error data:", error.response?.data);
 
+    // Handle specific error cases
+    if (error.response?.status === 400) {
+      const errorMessage =
+        error.response?.data?.error || error.response?.data?.message || "";
+
+      if (
+        errorMessage.includes("Record to update not found") ||
+        errorMessage.includes("not found")
+      ) {
+        throw new Error(
+          `Category with ID "${id}" was not found. It may have been deleted by another user or the ID is invalid.`
+        );
+      }
+
+      if (
+        errorMessage.includes("validation") ||
+        errorMessage.includes("required")
+      ) {
+        throw new Error(`Invalid data provided: ${errorMessage}`);
+      }
+
+      if (
+        errorMessage.includes("duplicate") ||
+        errorMessage.includes("already exists")
+      ) {
+        throw new Error(
+          `A category with this name already exists. Please choose a different name.`
+        );
+      }
+
+      throw new Error(`Update failed: ${errorMessage || "Invalid request"}`);
+    }
+
     if (error.response?.status === 404) {
-      throw new Error(`Category with ID ${id} not found`);
+      throw new Error(
+        `Category with ID "${id}" not found. It may have been deleted.`
+      );
+    }
+
+    if (error.response?.status === 403) {
+      throw new Error("You don't have permission to update this category");
     }
 
     if (error.response?.status === 500) {
-      throw new Error("Server error occurred while updating category");
+      throw new Error(
+        "Server error occurred while updating category. Please try again later."
+      );
+    }
+
+    // If it's a network error or other unexpected error
+    if (!error.response) {
+      throw new Error(
+        "Network error. Please check your connection and try again."
+      );
     }
 
     throw error;
@@ -309,16 +361,80 @@ export async function updateCategory(
 
 export async function deleteCategory(id: string): Promise<void> {
   try {
-    await api.delete(`/categories/${id}`);
+    console.log("deleteCategory called with ID:", id);
+
+    // Use utility function to validate and sanitize ID
+    const sanitizedId = sanitizeCategoryId(id);
+
+    console.log("Making DELETE request to:", `/categories/${sanitizedId}`);
+    await api.delete(`/categories/${sanitizedId}`);
+    console.log("Category deleted successfully");
   } catch (error: any) {
     console.error("deleteCategory error:", error);
+    console.error("Error response:", error.response);
+    console.error("Error status:", error.response?.status);
+    console.error("Error data:", error.response?.data);
+
+    // Handle specific error cases
+    if (error.response?.status === 400) {
+      const errorMessage =
+        error.response?.data?.error || error.response?.data?.message || "";
+
+      if (
+        errorMessage.includes("Record to update not found") ||
+        errorMessage.includes("not found")
+      ) {
+        throw new Error(
+          `Category with ID "${id}" was not found. It may have already been deleted.`
+        );
+      }
+
+      if (
+        errorMessage.includes("constraint") ||
+        errorMessage.includes("foreign key")
+      ) {
+        throw new Error(
+          "Cannot delete this category because it's being used by existing articles. Please move the articles to another category first."
+        );
+      }
+
+      if (
+        errorMessage.includes("protected") ||
+        errorMessage.includes("system")
+      ) {
+        throw new Error("This category is protected and cannot be deleted.");
+      }
+
+      throw new Error(`Delete failed: ${errorMessage || "Invalid request"}`);
+    }
 
     if (error.response?.status === 404) {
-      throw new Error(`Category with ID ${id} not found`);
+      throw new Error(
+        `Category with ID "${id}" not found. It may have already been deleted.`
+      );
+    }
+
+    if (error.response?.status === 403) {
+      throw new Error("You don't have permission to delete this category");
+    }
+
+    if (error.response?.status === 409) {
+      throw new Error(
+        "Cannot delete this category because it's being used by existing articles"
+      );
     }
 
     if (error.response?.status === 500) {
-      throw new Error("Server error occurred while deleting category");
+      throw new Error(
+        "Server error occurred while deleting category. Please try again later."
+      );
+    }
+
+    // If it's a network error or other unexpected error
+    if (!error.response) {
+      throw new Error(
+        "Network error. Please check your connection and try again."
+      );
     }
 
     throw error;
@@ -353,22 +469,18 @@ export async function getCurrentUser() {
     throw new Error("No authentication token found");
   }
 
-  // Use the local API route that handles the backend call with proper headers
-  const res = await fetch("/api/auth/me", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+  // Get user data from localStorage instead of API call
+  const savedUser = localStorage.getItem("user");
+  if (!savedUser) {
+    throw new Error("No user data found in localStorage");
   }
 
-  const data = await res.json();
-  return data;
+  try {
+    const userData = JSON.parse(savedUser);
+    return userData;
+  } catch (error) {
+    throw new Error("Invalid user data in localStorage");
+  }
 }
 
 export async function refreshToken() {
