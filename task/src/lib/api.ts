@@ -61,7 +61,13 @@ export async function getArticle(id: string): Promise<Article> {
 }
 
 export async function createArticle(data: ArticleFormData): Promise<Article> {
-  const res = await api.post("/articles", data);
+  // Only send the fields that backend accepts
+  const createData = {
+    title: data.title,
+    content: data.content,
+    categoryId: data.categoryId,
+  };
+  const res = await api.post("/articles", createData);
   return res.data;
 }
 

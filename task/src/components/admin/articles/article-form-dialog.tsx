@@ -59,12 +59,14 @@ export function ArticleFormDialog({
   useEffect(() => {
     if (open) {
       if (article) {
+        // Editing existing article
         reset({
-          title: article.title,
-          content: article.content,
-          categoryId: String(article.category.id),
+          title: article.title || "",
+          content: article.content || "",
+          categoryId: String(article.category?.id || article.categoryId || ""),
         })
       } else {
+        // Creating new article
         reset({
           title: "",
           content: "",
@@ -79,21 +81,23 @@ export function ArticleFormDialog({
     setIsSubmitting(true)
     try {
       if (isEditing && article) {
+        // For updating existing articles
         await articlesManagementApi.updateArticle(article.id, data)
         toast({
           title: "Success",
           description: "Article updated successfully",
         })
       } else {
-        // For creating new articles, we need to convert to full ArticleFormData
-        const fullData = {
-          title: data.title,
-          content: data.content,
+        // For creating new articles - backend only needs title, content, categoryId
+        const createData = {
+          title: data.title.trim(),
+          content: data.content.trim(),
           categoryId: data.categoryId,
-          excerpt: data.content.substring(0, 200) + "...", // Auto-generate excerpt from content
-          thumbnail: "", // Default empty thumbnail for new articles
+          // Remove excerpt and thumbnail since backend doesn't accept them
         }
-        await articlesManagementApi.createArticle(fullData)
+
+        console.log("Creating article with data:", createData)
+        await articlesManagementApi.createArticle(createData)
         toast({
           title: "Success",
           description: "Article created successfully",
@@ -102,17 +106,16 @@ export function ArticleFormDialog({
       onSuccess()
       onOpenChange(false)
     } catch (error) {
+      console.error("Article submission error:", error)
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Something went wrong",
+        description: error instanceof Error ? error.message : "Failed to save article. Please try again.",
         variant: "destructive",
       })
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  // ✅ pastikan categories array
+  }  // ✅ pastikan categories array
   const categoryList: Category[] = Array.isArray(categories) ? categories : (categories as any)?.data || []
   const selectedCategory = categoryList.find(
     (cat: Category) => String(cat.id) === String(watchedValues.categoryId)
@@ -141,10 +144,10 @@ export function ArticleFormDialog({
           <TabsContent value="form" className="mt-4 overflow-y-auto max-h-[60vh]">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Title *</Label>
                 <Input
                   id="title"
-                  placeholder="Enter article title"
+                  placeholder="Enter article title (minimum 5 characters)"
                   {...register("title")}
                   className={errors.title ? "border-destructive" : ""}
                 />
@@ -152,7 +155,7 @@ export function ArticleFormDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="categoryId">Category</Label>
+                <Label htmlFor="categoryId">Category *</Label>
                 <Select
                   value={watchedValues.categoryId}
                   onValueChange={(value) => setValue("categoryId", value)}
@@ -161,28 +164,40 @@ export function ArticleFormDialog({
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoryList.map((category: Category) => (
-                      <SelectItem key={category.id} value={String(category.id)}>
-                        {category.name}
+                    {categoryList.length > 0 ? (
+                      categoryList.map((category: Category) => (
+                        <SelectItem key={category.id} value={String(category.id)}>
+                          {category.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="" disabled>
+                        No categories available
                       </SelectItem>
-                    ))}
+                    )}
                   </SelectContent>
                 </Select>
                 {errors.categoryId && (
                   <p className="text-sm text-destructive">{errors.categoryId.message}</p>
                 )}
+                {categoryList.length === 0 && (
+                  <p className="text-sm text-amber-600">No categories found. Please create a category first.</p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="content">Content</Label>
+                <Label htmlFor="content">Content *</Label>
                 <Textarea
                   id="content"
-                  placeholder="Write your article content here..."
+                  placeholder="Write your article content here (minimum 50 characters)..."
                   rows={8}
                   {...register("content")}
                   className={errors.content ? "border-destructive" : ""}
                 />
                 {errors.content && <p className="text-sm text-destructive">{errors.content.message}</p>}
+                <p className="text-sm text-gray-500">
+                  {watchedValues.content ? `${watchedValues.content.length} characters` : "0 characters"}
+                </p>
               </div>
 
               <div className="flex justify-end gap-3 pt-4">
@@ -193,14 +208,17 @@ export function ArticleFormDialog({
                   type="button"
                   variant="secondary"
                   onClick={() => setActiveTab("preview")}
-                  disabled={!watchedValues.title}
+                  disabled={!watchedValues.title || !watchedValues.content || !watchedValues.categoryId}
                 >
                   <Eye className="mr-2 h-4 w-4" />
                   Preview
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || !watchedValues.title || !watchedValues.content || !watchedValues.categoryId}
+                >
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {isEditing ? "Update" : "Create"}
+                  {isEditing ? "Update Article" : "Create Article"}
                 </Button>
               </div>
             </form>
@@ -212,14 +230,29 @@ export function ArticleFormDialog({
               <CardHeader>
                 <div className="flex items-center gap-2 mb-2">
                   {selectedCategory && <Badge variant="secondary">{selectedCategory.name}</Badge>}
+                  {!selectedCategory && watchedValues.categoryId && (
+                    <Badge variant="outline">Category Selected</Badge>
+                  )}
                 </div>
-                <CardTitle className="text-2xl">{watchedValues.title || "Article Title"}</CardTitle>
+                <CardTitle className="text-2xl">
+                  {watchedValues.title || "Article Title"}
+                </CardTitle>
+                {watchedValues.content && (
+                  <p className="text-sm text-gray-600">
+                    Auto-generated excerpt: {watchedValues.content.substring(0, 200)}
+                    {watchedValues.content.length > 200 ? "..." : ""}
+                  </p>
+                )}
               </CardHeader>
               <CardContent>
                 <div className="prose max-w-none">
-                  <p className="whitespace-pre-wrap">
+                  <div className="whitespace-pre-wrap">
                     {watchedValues.content || "Article content will appear here..."}
-                  </p>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t text-sm text-gray-500">
+                  <p><strong>Characters:</strong> {watchedValues.content?.length || 0}</p>
+                  <p><strong>Words:</strong> {watchedValues.content ? watchedValues.content.trim().split(/\s+/).length : 0}</p>
                 </div>
               </CardContent>
             </Card>
@@ -228,7 +261,10 @@ export function ArticleFormDialog({
               <Button type="button" variant="outline" onClick={() => setActiveTab("form")}>
                 Back to Edit
               </Button>
-              <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+              <Button
+                onClick={handleSubmit(onSubmit)}
+                disabled={isSubmitting || !watchedValues.title || !watchedValues.content || !watchedValues.categoryId}
+              >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? "Update Article" : "Create Article"}
               </Button>

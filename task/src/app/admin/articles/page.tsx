@@ -212,20 +212,18 @@ export default function AdminArticlesPage() {
 
   return (
     <AdminLayout>
-      {/* <AdminHeader title="Articles" description={`Total Articles: ${pagination.total}`}>
+      <AdminHeader title="Articles" description={`Total Articles: ${pagination.total}`}>
         <Button onClick={handleCreate}>
           <Plus className="mr-2 h-4 w-4" />
           New Article
         </Button>
-      </AdminHeader> */}
+      </AdminHeader>
 
       <div className="p-6">
-        {/* Use the simple filters for testing */}
         <div className="bg-white p-4 rounded-lg border mb-6">
-          <h3 className="text-lg font-semibold mb-4">Search Articles</h3>
           <div className="flex gap-4 items-end">
             <div className="flex-1">
-              <label className="block text-sm font-medium mb-2">Search by title or content:</label>
+              <label className="block text-sm font-medium mb-2">Search Articles</label>
               <input
                 type="text"
                 placeholder="Enter search term..."
@@ -276,32 +274,6 @@ export default function AdminArticlesPage() {
             </button>
           </div>
         </div>
-
-        {/* Debug Information */}
-        <div className="bg-gray-50 p-3 rounded-lg mb-4 text-sm">
-          <div className="grid grid-cols-4 gap-4">
-            <div>
-              <strong>Total Articles:</strong> {allArticles.length}
-            </div>
-            <div>
-              <strong>Filtered Results:</strong> {articles.length}
-            </div>
-            <div>
-              <strong>Current Search:</strong> "{filters.search || 'none'}"
-            </div>
-            <div>
-              <strong>Category Filter:</strong> {filters.categoryId ? categories.find(c => c.id === filters.categoryId)?.name || 'Unknown' : 'All'}
-            </div>
-          </div>
-        </div>        {/* Debug info */}
-        {(filters.search || filters.categoryId) && (
-          <div className="mb-4 p-3 bg-gray-100 rounded-md text-sm">
-            <p><strong>Active Filters:</strong></p>
-            {filters.search && <p>Search: "{filters.search}"</p>}
-            {filters.categoryId && <p>Category ID: {filters.categoryId}</p>}
-            <p>Total Results: {pagination.total}</p>
-          </div>
-        )}
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
