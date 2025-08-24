@@ -5,9 +5,9 @@ import { LoginForm } from "@/components/auth/login-form";
 import { useLogin } from "@/hooks/use-login";
 
 export default function LoginPage() {
+    
     const { loginUser, isLoading, error, clearError } = useLogin();
 
-    // Clear error when component unmounts or when user starts typing
     React.useEffect(() => {
         return () => clearError();
     }, [clearError]);

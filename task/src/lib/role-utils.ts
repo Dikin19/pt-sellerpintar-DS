@@ -19,7 +19,7 @@ export function getRoleBasedRedirectPath(role: UserRole): string {
   let path: string;
   switch (role) {
     case "Admin":
-      path = "/admin/articles"; // Admin goes to admin dashboard
+      path = "/admin"; // Admin goes to admin dashboard
       break;
     case "User":
       path = "/articles"; // User goes to articles listing

@@ -36,7 +36,7 @@ export function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2">
-        <Link href="/articles">
+        <Link href="/admin">
           <Button variant="ghost" className="w-full justify-start text-white hover:bg-blue-500 hover:text-white">
             <Home className="mr-3 h-5 w-5" />
             Back to Site
