@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { useAuth, usePermission } from "@/contexts/auth-context"
 import { getArticles, getCategories } from "@/lib/api"
 import type { Article, Category, PaginatedResponse } from "@/lib/type"
-import Link from "next/link"
 import { Loader2, LogOut, User, Shield } from "lucide-react"
 
 export default function AdminPage() {

@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import { AdminLayout } from "@/components/admin/admin-layout"
 import { AdminHeader } from "@/components/admin/admin-header"
 import { AdminArticleTable } from "@/components/admin/articles/admin-article-table"
-import { AdminArticleFilters } from "@/components/admin/articles/admin-article-filters"
 import { ArticleFormDialog } from "@/components/admin/articles/article-form-dialog"
 import { DeleteArticleDialog } from "@/components/admin/articles/delete-article-dialog"
 import { Pagination } from "@/components/ui/pagination"
@@ -213,23 +212,26 @@ export default function AdminArticlesPage() {
   return (
     <AdminLayout>
       <AdminHeader title="Articles" description={`Total Articles: ${pagination.total}`}>
-        <Button onClick={handleCreate}>
+        <Button onClick={handleCreate} className="w-full sm:w-auto min-w-fit">
           <Plus className="mr-2 h-4 w-4" />
-          New Article
+          <span className="hidden sm:inline">New Article</span>
+          <span className="sm:hidden">New</span>
         </Button>
       </AdminHeader>
 
-      <div className="p-6">
-        <div className="bg-white p-4 rounded-lg border mb-6">
-          <div className="flex gap-4 items-end">
-            <div className="flex-1">
-              <label className="block text-sm font-medium mb-2">Search Articles</label>
+      <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
+        {/* Search and Filter Section */}
+        <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg border shadow-sm">
+          <div className="space-y-4">
+            {/* Search Input */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Search Articles</label>
               <input
                 type="text"
                 placeholder="Enter search term..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     setCurrentPage(1)
@@ -238,89 +240,118 @@ export default function AdminArticlesPage() {
                 }}
               />
             </div>
-            <div className="w-48">
-              <label className="block text-sm font-medium mb-2">Category:</label>
-              <select
-                value={filters.categoryId}
-                onChange={(e) => setFilters(prev => ({ ...prev, categoryId: e.target.value }))}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">All Categories</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+
+            {/* Filters Row */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              {/* Category Filter */}
+              <div className="flex-1 sm:max-w-xs">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <select
+                  value={filters.categoryId}
+                  onChange={(e) => setFilters(prev => ({ ...prev, categoryId: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 sm:items-end sm:pt-6">
+                <button
+                  onClick={() => {
+                    setCurrentPage(1)
+                    fetchAllArticles()
+                  }}
+                  className="px-4 sm:px-6 py-2 text-sm sm:text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium"
+                >
+                  Search
+                </button>
+                <button
+                  onClick={() => {
+                    setFilters({ search: "", categoryId: "" })
+                    setCurrentPage(1)
+                    fetchAllArticles()
+                  }}
+                  className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium"
+                >
+                  Clear
+                </button>
+              </div>
             </div>
-            <button
-              onClick={() => {
-                setCurrentPage(1)
-                fetchAllArticles()
-              }}
-              className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Search
-            </button>
-            <button
-              onClick={() => {
-                setFilters({ search: "", categoryId: "" })
-                setCurrentPage(1)
-                fetchAllArticles()
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Clear
-            </button>
           </div>
         </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-red-500 text-lg">{error}</p>
-            <Button
-              onClick={() => fetchAllArticles()}
-              className="mt-4"
-              variant="outline"
-            >
-              Try Again
-            </Button>
-          </div>
-        ) : (
-          <>
-            <AdminArticleTable
-              articles={articles}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-            {articles.length > 0 && (
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </>
-        )}
+        {/* Content Section */}
+        <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+          {loading ? (
+            <div className="flex items-center justify-center py-12 sm:py-16 lg:py-20">
+              <div className="text-center">
+                <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin mx-auto text-blue-600" />
+                <p className="mt-3 text-sm sm:text-base text-gray-600">Loading articles...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12 sm:py-16 lg:py-20 px-4">
+              <div className="max-w-md mx-auto">
+                <p className="text-red-600 text-base sm:text-lg mb-4 font-medium">{error}</p>
+                <Button
+                  onClick={() => fetchAllArticles()}
+                  className="w-full sm:w-auto"
+                  variant="outline"
+                >
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Table Container with horizontal scroll */}
+              <div className="overflow-x-auto">
+                <div className="min-w-full">
+                  <AdminArticleTable
+                    articles={articles}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                </div>
+              </div>
 
-        <ArticleFormDialog
-          open={formDialogOpen}
-          onOpenChange={setFormDialogOpen}
-          article={selectedArticle}
-          onSuccess={handleSuccess}
-        />
-
-        <DeleteArticleDialog
-          open={deleteDialogOpen}
-          onOpenChange={setDeleteDialogOpen}
-          article={selectedArticle}
-          onSuccess={handleSuccess}
-        />
+              {/* Pagination */}
+              {articles.length > 0 && pagination.totalPages > 1 && (
+                <div className="px-4 sm:px-6 py-4 border-t bg-gray-50">
+                  <div className="flex justify-center">
+                    <Pagination
+                      currentPage={pagination.page}
+                      totalPages={pagination.totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Dialogs */}
+      <ArticleFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        article={selectedArticle}
+        onSuccess={handleSuccess}
+      />
+
+      <DeleteArticleDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        article={selectedArticle}
+        onSuccess={handleSuccess}
+      />
     </AdminLayout>
   )
 }

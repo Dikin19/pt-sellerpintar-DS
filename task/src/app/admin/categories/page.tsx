@@ -177,10 +177,10 @@ export default function AdminCategoriesPage() {
         return (
             <RoleGuard allowedRoles={["Admin"]}>
                 <AdminLayout>
-                    <div className="flex items-center justify-center h-64">
-                        <div className="flex items-center space-x-2">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                            <span>Loading categories...</span>
+                    <div className="flex items-center justify-center min-h-[50vh] lg:min-h-[60vh]">
+                        <div className="text-center">
+                            <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 border-b-2 border-blue-600 mx-auto"></div>
+                            <p className="mt-4 text-sm sm:text-base lg:text-lg text-gray-600">Loading categories...</p>
                         </div>
                     </div>
                 </AdminLayout>
@@ -192,10 +192,12 @@ export default function AdminCategoriesPage() {
         return (
             <RoleGuard allowedRoles={["Admin"]}>
                 <AdminLayout>
-                    <div className="flex items-center justify-center h-64">
-                        <div className="text-center">
-                            <p className="text-red-600 mb-4">{error}</p>
-                            <Button onClick={fetchAllCategories}>Try Again</Button>
+                    <div className="flex items-center justify-center min-h-[50vh] lg:min-h-[60vh] px-4">
+                        <div className="text-center max-w-md mx-auto">
+                            <p className="text-red-600 mb-4 text-sm sm:text-base lg:text-lg font-medium">{error}</p>
+                            <Button onClick={fetchAllCategories} className="w-full sm:w-auto">
+                                Try Again
+                            </Button>
                         </div>
                     </div>
                 </AdminLayout>
@@ -207,52 +209,66 @@ export default function AdminCategoriesPage() {
         <RoleGuard allowedRoles={["Admin"]}>
             <AdminLayout>
                 <AdminHeader title="Categories" description={`Total Categories: ${pagination.total}`}>
-                    <Button onClick={handleCreate}>
+                    <Button onClick={handleCreate} className="w-full sm:w-auto min-w-fit">
                         <Plus className="mr-2 h-4 w-4" />
-                        New Category
+                        <span className="hidden sm:inline">New Category</span>
+                        <span className="sm:hidden">New</span>
                     </Button>
                 </AdminHeader>
 
-                <div className="p-6">
+                <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
                     {/* Search and Filters */}
-                    <AdminCategoryFilters
-                        search={search}
-                        onSearchChange={setSearch}
-                        onAddCategory={() => setFormDialogOpen(true)}
-                        resultsInfo={debouncedSearch ? `Found ${pagination.total} result(s)` : undefined}
-                    />
+                    <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg border shadow-sm">
+                        <AdminCategoryFilters
+                            search={search}
+                            onSearchChange={setSearch}
+                            onAddCategory={() => setFormDialogOpen(true)}
+                            resultsInfo={debouncedSearch ? `Found ${pagination.total} result(s)` : undefined}
+                        />
+                    </div>
 
                     {/* Categories Table */}
-                    <div className="bg-white rounded-lg border">
+                    <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
                         {categories.length === 0 ? (
-                            <div className="text-center py-12">
-                                <p className="text-muted-foreground text-lg">
-                                    {debouncedSearch ? "No categories found matching your search." : "No categories found."}
-                                </p>
-                                <p className="text-muted-foreground text-sm mt-2">
-                                    {debouncedSearch ? "Try adjusting your search terms." : "Create your first category to get started."}
-                                </p>
-                                {!debouncedSearch && (
-                                    <Button onClick={handleCreate} className="mt-4">
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Create Category
-                                    </Button>
-                                )}
+                            <div className="text-center py-12 sm:py-16 lg:py-20 px-4">
+                                <div className="max-w-md mx-auto">
+                                    <p className="text-gray-600 text-base sm:text-lg lg:text-xl font-medium mb-2">
+                                        {debouncedSearch ? "No categories found matching your search." : "No categories found."}
+                                    </p>
+                                    <p className="text-gray-500 text-sm sm:text-base mb-6">
+                                        {debouncedSearch ? "Try adjusting your search terms." : "Create your first category to get started."}
+                                    </p>
+                                    {!debouncedSearch && (
+                                        <Button onClick={handleCreate} className="w-full sm:w-auto">
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Create Category
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         ) : (
                             <>
-                                <CategoryTable 
-                                    categories={categories} 
-                                    onEdit={handleEdit} 
-                                    onDelete={handleDelete} 
-                                />
-                                {pagination.totalPages > 1 && (
-                                    <div className="p-4 border-t">
-                                        <Pagination
-                                            currentPage={currentPage}
-                                            totalPages={pagination.totalPages}
-                                            onPageChange={handlePageChange}
+                                {/* Table Container with horizontal scroll */}
+                                <div className="overflow-x-auto">
+                                    <div className="min-w-full">
+                                        <CategoryTable
+                                            categories={categories}
+                                            onEdit={handleEdit}
+                                            onDelete={handleDelete}
                                         />
+                                    </div>
+                                </div>
+
+                                {/* Pagination */}
+                                {pagination.totalPages > 1 && (
+                                    <div className="px-4 sm:px-6 py-4 border-t bg-gray-50">
+                                        <div className="flex justify-center">
+                                            <Pagination
+                                                currentPage={currentPage}
+                                                totalPages={pagination.totalPages}
+                                                onPageChange={handlePageChange}
+                                            />
+                                        </div>
                                     </div>
                                 )}
                             </>
@@ -260,6 +276,7 @@ export default function AdminCategoriesPage() {
                     </div>
                 </div>
 
+                {/* Dialogs */}
                 <CategoryFormDialog
                     open={formDialogOpen}
                     onOpenChange={setFormDialogOpen}

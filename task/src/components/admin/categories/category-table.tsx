@@ -23,21 +23,21 @@ export function CategoryTable({ categories, onEdit, onDelete }: CategoryTablePro
 
     if (categories.length === 0) {
         return (
-            <div className="text-center py-12 bg-white rounded-lg border">
-                <p className="text-muted-foreground text-lg">No categories found.</p>
-                <p className="text-muted-foreground text-sm mt-2">Create your first category to get started.</p>
+            <div className="text-center py-8 sm:py-12 lg:py-16 px-4">
+                <p className="text-gray-600 text-base sm:text-lg lg:text-xl font-medium mb-2">No categories found.</p>
+                <p className="text-gray-500 text-sm sm:text-base">Create your first category to get started.</p>
             </div>
         )
     }
 
     return (
-        <div className="bg-white rounded-lg border">
+        <div className="w-full">
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Created</TableHead>
-                        <TableHead>Updated</TableHead>
+                        <TableHead className="min-w-[150px]">Name</TableHead>
+                        <TableHead className="hidden sm:table-cell min-w-[120px]">Created</TableHead>
+                        <TableHead className="hidden md:table-cell min-w-[120px]">Updated</TableHead>
                         <TableHead className="w-12"></TableHead>
                     </TableRow>
                 </TableHeader>
@@ -51,19 +51,28 @@ export function CategoryTable({ categories, onEdit, onDelete }: CategoryTablePro
                         .map((category) => {
                             return (
                                 <TableRow key={category.id}>
-                                    <TableCell>
-                                        <p className="font-medium text-sm">{category.name}</p>
+                                    <TableCell className="p-2 sm:p-4">
+                                        <div className="space-y-1">
+                                            <p className="font-medium text-sm sm:text-base break-words">
+                                                {category.name}
+                                            </p>
+                                            {/* Show dates on mobile when hidden in separate columns */}
+                                            <div className="sm:hidden space-y-1 text-xs text-muted-foreground">
+                                                <div>Created: {formatDate(category.createdAt)}</div>
+                                                <div>Updated: {formatDate(category.updatedAt)}</div>
+                                            </div>
+                                        </div>
                                     </TableCell>
-                                    <TableCell className="text-sm text-muted-foreground">
+                                    <TableCell className="hidden sm:table-cell p-2 sm:p-4 text-xs sm:text-sm text-muted-foreground">
                                         {formatDate(category.createdAt)}
                                     </TableCell>
-                                    <TableCell className="text-sm text-muted-foreground">
+                                    <TableCell className="hidden md:table-cell p-2 sm:p-4 text-xs sm:text-sm text-muted-foreground">
                                         {formatDate(category.updatedAt)}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="p-2 sm:p-4">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="sm">
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                                     <MoreHorizontal className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>

@@ -33,9 +33,9 @@ export function AdminArticleTable({ articles, onEdit, onDelete }: AdminArticleTa
 
   if (!validArticles || validArticles.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground text-lg">No articles found.</p>
-        <p className="text-muted-foreground text-sm mt-2">
+      <div className="text-center py-8 sm:py-12 lg:py-16 px-4">
+        <p className="text-gray-600 text-base sm:text-lg lg:text-xl font-medium mb-2">No articles found.</p>
+        <p className="text-gray-500 text-sm sm:text-base">
           {articles?.length === 0 ? "Try adjusting your search criteria or create your first article." : "Create your first article to get started."}
         </p>
       </div>
@@ -43,14 +43,14 @@ export function AdminArticleTable({ articles, onEdit, onDelete }: AdminArticleTa
   }
 
   return (
-    <div className="bg-white rounded-lg border overflow-hidden ml-50px">
+    <div className="w-full">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Thumbnails</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Created at</TableHead>
+            <TableHead className="w-16 sm:w-20">Image</TableHead>
+            <TableHead className="min-w-[200px]">Title</TableHead>
+            <TableHead className="hidden sm:table-cell min-w-[120px]">Category</TableHead>
+            <TableHead className="hidden md:table-cell min-w-[140px]">Created</TableHead>
             <TableHead className="w-12"></TableHead>
           </TableRow>
         </TableHeader>
@@ -62,8 +62,8 @@ export function AdminArticleTable({ articles, onEdit, onDelete }: AdminArticleTa
 
             return (
               <TableRow key={article.id}>
-                <TableCell>
-                  <div className="w-12 h-12 relative rounded overflow-hidden">
+                <TableCell className="p-2 sm:p-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 relative rounded overflow-hidden flex-shrink-0">
                     <Image
                       src={pollinationsUrl || "/placeholder.svg"}
                       alt={article.title}
@@ -72,21 +72,31 @@ export function AdminArticleTable({ articles, onEdit, onDelete }: AdminArticleTa
                     />
                   </div>
                 </TableCell>
-                <TableCell>
-                  <p className="font-medium text-sm">{article.title}</p>
+                <TableCell className="p-2 sm:p-4">
+                  <div className="space-y-1">
+                    <p className="font-medium text-sm sm:text-base line-clamp-2 break-words">
+                      {article.title}
+                    </p>
+                    {/* Show category on mobile when hidden in separate column */}
+                    <div className="sm:hidden">
+                      <Badge variant="secondary" className="text-xs">
+                        {article.category.name}
+                      </Badge>
+                    </div>
+                  </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden sm:table-cell p-2 sm:p-4">
                   <Badge variant="secondary" className="text-xs">
                     {article.category.name}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell className="hidden md:table-cell p-2 sm:p-4 text-xs sm:text-sm text-muted-foreground">
                   {formatDistanceToNow(new Date(article.createdAt), { addSuffix: true })}
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-2 sm:p-4">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
