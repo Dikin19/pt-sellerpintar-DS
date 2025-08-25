@@ -65,7 +65,7 @@ export const showPromiseToast = <T>(
     {
       pending: messages.pending,
       success: messages.success,
-      error: messages.error || "Something went wrong!",
+      error: messages.error,
     },
     {
       ...defaultOptions,

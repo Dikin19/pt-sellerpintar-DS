@@ -1,9 +1,6 @@
 import { useState } from "react";
 import api from "@/lib/axios";
-import {
-  showErrorToast,
-  showPromiseToast,
-} from "@/lib/toast-utils";
+import { showErrorToast, showPromiseToast } from "@/lib/toast-utils";
 
 export interface RegisterData {
   username: string;
@@ -36,7 +33,6 @@ export const useRegister = (): UseRegisterReturn => {
         {
           pending: "Creating your account...",
           success: "Registration successful!",
-          error: "Registration failed",
         }
       );
 
@@ -74,10 +70,13 @@ export const useRegister = (): UseRegisterReturn => {
       }
 
       // Handle specific error cases with user-friendly messages
-      if (err.response?.status === 400) {
-        errorMessage =
-          "Invalid data format. Please check your input and try again.";
-      } else if (err.response?.status === 409) {
+      if (
+        err.response?.status === 409 ||
+        (err.response?.data?.error &&
+          err.response.data.error.includes("Unique constraint failed")) ||
+        (err.response?.data?.message &&
+          err.response.data.message.includes("Unique constraint failed"))
+      ) {
         errorMessage =
           "Username already exists. Please choose a different username.";
       } else if (err.response?.status === 422) {

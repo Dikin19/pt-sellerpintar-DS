@@ -260,11 +260,6 @@ export const displayValidationResults = (
     const errorMessage = result.errors.join("\n");
     showErrorToast(`Validation Error:\n${errorMessage}`, { autoClose: 7000 });
   }
-
-//   if (showWarnings && result.warnings.length > 0) {
-//     const warningMessage = result.warnings.join("\n");
-//     showWarningToast(`Suggestions:\n${warningMessage}`, { autoClose: 5000 });
-//   }
 };
 
 // Convert react-hook-form errors to toast messages

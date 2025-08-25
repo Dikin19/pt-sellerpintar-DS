@@ -52,8 +52,6 @@ export default function RegisterForm() {
                 role: data.role
             })
 
-            showSuccessToast(`Registratiom Success`)
-
         } catch (error) {
             showErrorToast(`Registration failed. ${error}`);
         }
@@ -176,12 +174,6 @@ export default function RegisterForm() {
                     {success && (
                         <div className="mt-4 p-3 rounded-md bg-green-50 border border-green-200">
                             <p className="text-sm text-green-800">{success}</p>
-                        </div>
-                    )}
-
-                    {error && (
-                        <div className="mt-4 p-3 rounded-md bg-red-50 border border-red-200">
-                            <p className="text-sm text-red-800">{error}</p>
                         </div>
                     )}
                 </form>
