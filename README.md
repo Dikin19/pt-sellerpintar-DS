@@ -1241,8 +1241,6 @@ curl https://test-fe.mysellerpintar.com/api/articles
 curl http://localhost:3000/api/articles
 ```
 
-## 📞 Support & Contributing
-
 ### 🤝 Contributing Guidelines
 
 1. **Fork** repository
