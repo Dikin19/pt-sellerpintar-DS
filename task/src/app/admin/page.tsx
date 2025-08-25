@@ -251,7 +251,7 @@ export default function AdminPage() {
                   </>
                 )}
               </div>
-            </div>d d
+            </div>
 
             <div className="text-center">
               <p className="text-blue-100 text-xs sm:text-sm mb-2">Blog portal</p>
