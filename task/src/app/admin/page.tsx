@@ -207,34 +207,34 @@ export default function AdminPage() {
     <RoleGuard allowedRoles={["Admin", "User"]}>
       <div className="min-h-screen bg-background">
         <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-          <div className="container mx-auto px-4 py-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
+          <div className="container mx-auto px-4 py-4 sm:py-6 lg:py-8">
+            <div className="flex items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
                   {pollinationsUrl ? (
                     <Image
                       src={pollinationsUrl}
                       alt="App Logo"
-                      width={32}  
-                      height={32}  
+                      width={32}
+                      height={32}
                       className="object-cover"
                     />
                   ) : (
                     <span className="text-xs text-gray-500">N/A</span>
                   )}
                 </div>
-                <span className="font-semibold">
+                <span className="font-semibold text-sm sm:text-base md:text-lg lg:text-xl whitespace-nowrap overflow-hidden text-ellipsis">
                   Seller Pintar Digital Asia
                 </span>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                 {user && (
                   <>
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="hidden sm:flex items-center gap-2 text-sm">
                       <User className="h-4 w-4" />
-                      <span>{user.username}</span>
-                      <span className="text-xs bg-blue-500 px-2 py-1 rounded-full">
+                      <span className="truncate">{user.username}</span>
+                      <span className="text-xs bg-blue-500 px-2 py-1 rounded-full whitespace-nowrap">
                         {user.role}
                       </span>
                     </div>
@@ -242,24 +242,27 @@ export default function AdminPage() {
                       variant="outline"
                       size="sm"
                       onClick={logout}
-                      className="text-white border-white hover:bg-white hover:text-blue-600 bg-transparent"
+                      className="text-white border-white hover:bg-white hover:text-blue-600 bg-transparent text-xs sm:text-sm"
                     >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logout
+                      <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      <span className="hidden sm:inline">Logout</span>
+                      <span className="sm:hidden">Logout</span>
                     </Button>
                   </>
                 )}
               </div>
-            </div>
+            </div>d d
 
             <div className="text-center">
-              <p className="text-blue-100 text-sm mb-2">Blog portal</p>
-              <h1 className="text-4xl font-bold mb-4">The Journal: Design Resources, Interviews, and Industry News</h1>
-              <p className="text-blue-100 text-lg">
+              <p className="text-blue-100 text-xs sm:text-sm mb-2">Blog portal</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 sm:mb-4 px-2">
+                The Journal: Design Resources, Interviews, and Industry News
+              </h1>
+              <p className="text-blue-100 text-sm sm:text-base lg:text-lg px-2">
                 Your daily dose of design insights!
                 {!isAdmin() && (
-                  <span className="block text-sm mt-2 text-blue-200">
-                    <Shield className="inline h-4 w-4 mr-1" />
+                  <span className="block text-xs sm:text-sm mt-2 text-blue-200">
+                    <Shield className="inline h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                     You have read-only access to articles
                   </span>
                 )}
