@@ -1,0 +1,322 @@
+{
+    "data": [
+        {
+            "id": "article-1",
+            "title": "Getting Started with Next.js",
+            "content": "Next.js is a powerful React framework that enables you to build full-stack web applications. It provides many features out of the box including server-side rendering, static site generation, and API routes.",
+            "userId": "user-1",
+            "categoryId": "category-1",
+            "createdAt": "2025-08-25T06:15:12.325Z",
+            "updatedAt": "2025-08-25T06:15:12.325Z",
+            "category": {
+                "id": "category-1",
+                "name": "Web Development",
+                "userId": "user-1",
+                "createdAt": "2025-08-25T06:15:12.325Z",
+                "updatedAt": "2025-08-25T06:15:12.325Z"
+            },
+            "user": {
+                "id": "user-1",
+                "username": "johndoe",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-2",
+            "title": "Understanding TypeScript Basics",
+            "content": "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale. This article covers the fundamental concepts you need to know.",
+            "userId": "user-2",
+            "categoryId": "category-2",
+            "createdAt": "2025-08-25T07:30:45.150Z",
+            "updatedAt": "2025-08-25T07:30:45.150Z",
+            "category": {
+                "id": "category-2",
+                "name": "Programming Languages",
+                "userId": "user-2",
+                "createdAt": "2025-08-25T07:30:45.150Z",
+                "updatedAt": "2025-08-25T07:30:45.150Z"
+            },
+            "user": {
+                "id": "user-2",
+                "username": "janesmith",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-3",
+            "title": "Advanced React Patterns",
+            "content": "Explore advanced React patterns including compound components, render props, and custom hooks. These patterns will help you write more maintainable and reusable code.",
+            "userId": "user-3",
+            "categoryId": "category-1",
+            "createdAt": "2025-08-25T08:45:20.800Z",
+            "updatedAt": "2025-08-25T08:45:20.800Z",
+            "category": {
+                "id": "category-1",
+                "name": "Web Development",
+                "userId": "user-1",
+                "createdAt": "2025-08-25T06:15:12.325Z",
+                "updatedAt": "2025-08-25T06:15:12.325Z"
+            },
+            "user": {
+                "id": "user-3",
+                "username": "bobwilson",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-4",
+            "title": "Database Design Best Practices",
+            "content": "Learn the fundamental principles of database design including normalization, indexing, and query optimization. These practices will help you build scalable applications.",
+            "userId": "user-4",
+            "categoryId": "category-3",
+            "createdAt": "2025-08-25T09:15:30.200Z",
+            "updatedAt": "2025-08-25T09:15:30.200Z",
+            "category": {
+                "id": "category-3",
+                "name": "Database",
+                "userId": "user-4",
+                "createdAt": "2025-08-25T09:15:30.200Z",
+                "updatedAt": "2025-08-25T09:15:30.200Z"
+            },
+            "user": {
+                "id": "user-4",
+                "username": "alicebrown",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-5",
+            "title": "API Security Fundamentals",
+            "content": "Security is crucial when building APIs. This article covers authentication, authorization, input validation, and other security best practices for API development.",
+            "userId": "user-5",
+            "categoryId": "category-4",
+            "createdAt": "2025-08-25T10:20:15.500Z",
+            "updatedAt": "2025-08-25T10:20:15.500Z",
+            "category": {
+                "id": "category-4",
+                "name": "Security",
+                "userId": "user-5",
+                "createdAt": "2025-08-25T10:20:15.500Z",
+                "updatedAt": "2025-08-25T10:20:15.500Z"
+            },
+            "user": {
+                "id": "user-5",
+                "username": "charliedavis",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-6",
+            "title": "Modern CSS Techniques",
+            "content": "Explore modern CSS features including Grid, Flexbox, Custom Properties, and Container Queries. Learn how to create responsive and maintainable stylesheets.",
+            "userId": "user-6",
+            "categoryId": "category-1",
+            "createdAt": "2025-08-25T11:25:40.750Z",
+            "updatedAt": "2025-08-25T11:25:40.750Z",
+            "category": {
+                "id": "category-1",
+                "name": "Web Development",
+                "userId": "user-1",
+                "createdAt": "2025-08-25T06:15:12.325Z",
+                "updatedAt": "2025-08-25T06:15:12.325Z"
+            },
+            "user": {
+                "id": "user-6",
+                "username": "davidmiller",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-7",
+            "title": "Python Data Analysis with Pandas",
+            "content": "Master data analysis with Python using the Pandas library. Learn how to manipulate, clean, and analyze datasets efficiently.",
+            "userId": "user-7",
+            "categoryId": "category-5",
+            "createdAt": "2025-08-25T12:10:25.900Z",
+            "updatedAt": "2025-08-25T12:10:25.900Z",
+            "category": {
+                "id": "category-5",
+                "name": "Data Science",
+                "userId": "user-7",
+                "createdAt": "2025-08-25T12:10:25.900Z",
+                "updatedAt": "2025-08-25T12:10:25.900Z"
+            },
+            "user": {
+                "id": "user-7",
+                "username": "emilyjohnson",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-8",
+            "title": "Docker Containerization Guide",
+            "content": "Learn how to containerize your applications using Docker. This guide covers Docker basics, Dockerfile creation, and container orchestration.",
+            "userId": "user-8",
+            "categoryId": "category-6",
+            "createdAt": "2025-08-25T13:45:10.100Z",
+            "updatedAt": "2025-08-25T13:45:10.100Z",
+            "category": {
+                "id": "category-6",
+                "name": "DevOps",
+                "userId": "user-8",
+                "createdAt": "2025-08-25T13:45:10.100Z",
+                "updatedAt": "2025-08-25T13:45:10.100Z"
+            },
+            "user": {
+                "id": "user-8",
+                "username": "frankgarcia",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-9",
+            "title": "Machine Learning Fundamentals",
+            "content": "Introduction to machine learning concepts including supervised and unsupervised learning, model training, and evaluation metrics.",
+            "userId": "user-9",
+            "categoryId": "category-5",
+            "createdAt": "2025-08-25T14:30:55.300Z",
+            "updatedAt": "2025-08-25T14:30:55.300Z",
+            "category": {
+                "id": "category-5",
+                "name": "Data Science",
+                "userId": "user-7",
+                "createdAt": "2025-08-25T12:10:25.900Z",
+                "updatedAt": "2025-08-25T12:10:25.900Z"
+            },
+            "user": {
+                "id": "user-9",
+                "username": "gracewilliams",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-10",
+            "title": "GraphQL vs REST APIs",
+            "content": "Compare GraphQL and REST API architectures. Learn when to use each approach and understand their respective advantages and limitations.",
+            "userId": "user-10",
+            "categoryId": "category-1",
+            "createdAt": "2025-08-25T15:15:30.450Z",
+            "updatedAt": "2025-08-25T15:15:30.450Z",
+            "category": {
+                "id": "category-1",
+                "name": "Web Development",
+                "userId": "user-1",
+                "createdAt": "2025-08-25T06:15:12.325Z",
+                "updatedAt": "2025-08-25T06:15:12.325Z"
+            },
+            "user": {
+                "id": "user-10",
+                "username": "henrybrown",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-11",
+            "title": "AWS Cloud Services Overview",
+            "content": "Explore popular AWS services including EC2, S3, Lambda, and RDS. Learn how to architect scalable cloud solutions using Amazon Web Services.",
+            "userId": "user-11",
+            "categoryId": "category-7",
+            "createdAt": "2025-08-25T16:00:45.600Z",
+            "updatedAt": "2025-08-25T16:00:45.600Z",
+            "category": {
+                "id": "category-7",
+                "name": "Cloud Computing",
+                "userId": "user-11",
+                "createdAt": "2025-08-25T16:00:45.600Z",
+                "updatedAt": "2025-08-25T16:00:45.600Z"
+            },
+            "user": {
+                "id": "user-11",
+                "username": "isabelladavis",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-12",
+            "title": "Mobile App Development with React Native",
+            "content": "Build cross-platform mobile applications using React Native. Learn navigation, state management, and native module integration.",
+            "userId": "user-12",
+            "categoryId": "category-8",
+            "createdAt": "2025-08-25T17:20:15.750Z",
+            "updatedAt": "2025-08-25T17:20:15.750Z",
+            "category": {
+                "id": "category-8",
+                "name": "Mobile Development",
+                "userId": "user-12",
+                "createdAt": "2025-08-25T17:20:15.750Z",
+                "updatedAt": "2025-08-25T17:20:15.750Z"
+            },
+            "user": {
+                "id": "user-12",
+                "username": "jackmartinez",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-13",
+            "title": "Blockchain Technology Basics",
+            "content": "Understanding blockchain fundamentals, cryptocurrencies, smart contracts, and decentralized applications (DApps).",
+            "userId": "user-13",
+            "categoryId": "category-9",
+            "createdAt": "2025-08-25T18:05:30.900Z",
+            "updatedAt": "2025-08-25T18:05:30.900Z",
+            "category": {
+                "id": "category-9",
+                "name": "Blockchain",
+                "userId": "user-13",
+                "createdAt": "2025-08-25T18:05:30.900Z",
+                "updatedAt": "2025-08-25T18:05:30.900Z"
+            },
+            "user": {
+                "id": "user-13",
+                "username": "karenanderson",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-14",
+            "title": "Cybersecurity Best Practices",
+            "content": "Learn essential cybersecurity practices for developers including secure coding, vulnerability assessment, and incident response.",
+            "userId": "user-14",
+            "categoryId": "category-4",
+            "createdAt": "2025-08-25T19:10:45.100Z",
+            "updatedAt": "2025-08-25T19:10:45.100Z",
+            "category": {
+                "id": "category-4",
+                "name": "Security",
+                "userId": "user-5",
+                "createdAt": "2025-08-25T10:20:15.500Z",
+                "updatedAt": "2025-08-25T10:20:15.500Z"
+            },
+            "user": {
+                "id": "user-14",
+                "username": "liamthompson",
+                "role": "User"
+            }
+        },
+        {
+            "id": "article-15",
+            "title": "Agile Project Management",
+            "content": "Master Agile methodologies including Scrum and Kanban. Learn how to manage software development projects effectively using Agile principles.",
+            "userId": "user-15",
+            "categoryId": "category-10",
+            "createdAt": "2025-08-25T20:15:20.250Z",
+            "updatedAt": "2025-08-25T20:15:20.250Z",
+            "category": {
+                "id": "category-10",
+                "name": "Project Management",
+                "userId": "user-15",
+                "createdAt": "2025-08-25T20:15:20.250Z",
+                "updatedAt": "2025-08-25T20:15:20.250Z"
+            },
+            "user": {
+                "id": "user-15",
+                "username": "miawilson",
+                "role": "User"
+            }
+        }
+    ],
+    "total": 15,
+    "page": 1,
+    "limit": 10
+}
