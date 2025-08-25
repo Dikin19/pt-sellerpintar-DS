@@ -8,7 +8,7 @@ import { Pagination } from '@/components/ui/pagination';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, Plus, Edit, Trash2 } from 'lucide-react';
+import { Search, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 export function CategoryList() {

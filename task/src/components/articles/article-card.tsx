@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { User, Calendar, Eye } from "lucide-react"
 import type { Article } from "@/lib/type"

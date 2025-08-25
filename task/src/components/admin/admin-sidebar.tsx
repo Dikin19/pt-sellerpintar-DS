@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { FileText, FolderOpen, LogOut, Home, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import Image from "next/image"
 
 const navigation = [
   {
@@ -45,7 +46,7 @@ export function AdminSidebar() {
     <Button
       variant="ghost"
       size="sm"
-      className="lg:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white hover:bg-blue-700"
+      className="lg:hidden fixed top-4 right-4 z-50 bg-blue-600 text-white hover:bg-blue-700"
       onClick={toggleMobileMenu}
     >
       {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -80,11 +81,13 @@ export function AdminSidebar() {
         <div className="flex flex-col items-center gap-2 px-4 py-6 border-b border-blue-500 mt-12 lg:mt-0">
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center overflow-hidden shadow-md">
             {pollinationsUrl ? (
-              <img
+              <Image
                 src={pollinationsUrl}
-                alt="App Logo"
-                className="w-full h-full object-cover"
-              />
+                width={32}
+                height={32}
+                alt="App logo"
+                className="object-cover"
+              ></Image>
             ) : (
               <span className="text-xs text-gray-500">N/A</span>
             )}

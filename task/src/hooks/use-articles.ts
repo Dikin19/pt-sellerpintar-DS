@@ -81,13 +81,7 @@ export function useArticles(params?: UseArticlesParams) {
     if (params) {
       fetchArticles();
     }
-  }, [
-    params?.page,
-    params?.limit,
-    debouncedSearch,
-    params?.categoryId,
-    fetchArticles,
-  ]);
+  }, [params, debouncedSearch, fetchArticles]);
 
   const createArticleHandler = useCallback(
     async (data: ArticleFormData): Promise<Article | null> => {

@@ -8,7 +8,6 @@ import { getRoleBasedRedirectPath } from "@/lib/role-utils";
 import {
   showSuccessToast,
   showErrorToast,
-  showPromiseToast,
 } from "@/lib/toast-utils";
 
 interface UseLoginReturn {

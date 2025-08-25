@@ -43,7 +43,7 @@ export default function RegisterForm() {
 
             // Display warnings if any (non-blocking)
             if (validationResult.warnings.length > 0) {
-                displayValidationResults(validationResult, true);
+                displayValidationResults(validationResult);
             }
 
             await registerUser({
@@ -52,10 +52,10 @@ export default function RegisterForm() {
                 role: data.role
             })
 
+            showSuccessToast(`Registratiom Success`)
+
         } catch (error) {
-            // Error sudah di-handle di hook
-            // console.error('Registration failed:', error)
-            showErrorToast('Registration failed. Please check your information and try again.');
+            showErrorToast(`Registration failed. ${error}`);
         }
     }
 

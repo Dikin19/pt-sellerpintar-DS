@@ -11,6 +11,7 @@ import { useAuth, usePermission } from "@/contexts/auth-context"
 import { getArticles, getCategories } from "@/lib/api"
 import type { Article, Category, PaginatedResponse } from "@/lib/type"
 import { Loader2, LogOut, User, Shield } from "lucide-react"
+import Image from "next/image"
 
 export default function AdminPage() {
   const { user, logout, isLoading: authLoading } = useAuth()
@@ -202,7 +203,7 @@ export default function AdminPage() {
     )}%20app%20logo?width=500&height=500&nologo=true`
     : null
 
-    return (
+  return (
     <RoleGuard allowedRoles={["Admin", "User"]}>
       <div className="min-h-screen bg-background">
         <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
@@ -211,10 +212,12 @@ export default function AdminPage() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
                   {pollinationsUrl ? (
-                    <img
+                    <Image
                       src={pollinationsUrl}
                       alt="App Logo"
-                      className="w-8 h-8 object-cover"
+                      width={32}  
+                      height={32}  
+                      className="object-cover"
                     />
                   ) : (
                     <span className="text-xs text-gray-500">N/A</span>

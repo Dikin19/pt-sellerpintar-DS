@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { getCategories, deleteCategory } from "@/lib/api";
-import { Category, PaginatedResponse } from "@/lib/type";
+import { Category} from "@/lib/type";
 import { useDebounce } from "./use-debounce";
-import { sanitizeCategoryId, logCategoryDebugInfo } from "@/lib/category-utils";
+import { sanitizeCategoryId} from "@/lib/category-utils";
 
 interface UseCategoriesParams {
   page?: number;
@@ -111,8 +111,8 @@ export function useCategories(params: UseCategoriesParams = {}) {
   };
 
   useEffect(() => {
-    fetchCategories();
-  }, [params.page, params.limit, debouncedSearch]);
+  fetchCategories();
+}, [params.page, params.limit, debouncedSearch, fetchCategories]);
 
   return {
     categories,

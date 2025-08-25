@@ -45,9 +45,9 @@ export class ValidationCoordinator {
     }
 
     // Display warnings if any
-    if (validationResult.warnings.length > 0) {
-      displayValidationResults(validationResult, true);
-    }
+    // if (validationResult.warnings.length > 0) {
+    //   displayValidationResults(validationResult, true);
+    // }
 
     try {
       const result = await submitFunction();
@@ -73,9 +73,9 @@ export class ValidationCoordinator {
     }
 
     // Display warnings if any
-    if (validationResult.warnings.length > 0) {
-      displayValidationResults(validationResult, true);
-    }
+    // if (validationResult.warnings.length > 0) {
+    //   displayValidationResults(validationResult, true);
+    // }
 
     try {
       const result = await submitFunction();
@@ -102,9 +102,9 @@ export class ValidationCoordinator {
     }
 
     // Display warnings if any
-    if (validationResult.warnings.length > 0) {
-      displayValidationResults(validationResult, true);
-    }
+    // if (validationResult.warnings.length > 0) {
+    //   displayValidationResults(validationResult, true);
+    // }
 
     try {
       const result = await submitFunction();
@@ -134,9 +134,9 @@ export class ValidationCoordinator {
     }
 
     // Display warnings if any
-    if (validationResult.warnings.length > 0) {
-      displayValidationResults(validationResult, true);
-    }
+    // if (validationResult.warnings.length > 0) {
+    //   displayValidationResults(validationResult, true);
+    // }
 
     try {
       const result = await submitFunction();
@@ -169,9 +169,9 @@ export class ValidationCoordinator {
       return { success: false, error: "Validation failed" };
     }
 
-    if (validationResult.warnings.length > 0) {
-      displayValidationResults(validationResult, true);
-    }
+    // if (validationResult.warnings.length > 0) {
+    //   displayValidationResults(validationResult, true);
+    // }
 
     try {
       const result = await submitFunction();
@@ -208,14 +208,14 @@ export const ValidationUtils = {
   showInfo: showInfoToast,
 
   // Validate individual fields
-  validateField: (
-    fieldName: string,
-    value: string,
-    type: "username" | "password" | "title" | "content" | "categoryName"
-  ) => {
-    // You can add field validation logic here
-    return { isValid: true, message: "" };
-  },
+  // validateField: (
+  //   fieldName: string,
+  //   value: string,
+  //   type: "username" | "password" | "title" | "content" | "categoryName"
+  // ) => {
+  //   // You can add field validation logic here
+  //   return { isValid: true, message: "" };
+  // },
 };
 
 // Export commonly used validation functions

@@ -2,7 +2,6 @@
 
 import React from "react";
 import { AlertTriangle, Shield, Users, UserCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth, usePermission } from "@/contexts/auth-context";

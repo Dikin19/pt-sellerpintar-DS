@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useArticles } from '@/hooks/use-articles'
 import { useCategories } from '@/hooks/use-categories'
-import { validateArticleForm, displayValidationResults, displayFormErrors } from '@/lib/form-validation'
+import { validateArticleForm, displayValidationResults } from '@/lib/form-validation'
 import { showSuccessToast, showErrorToast } from '@/lib/toast-utils'
 import { articleFormSchema } from '@/lib/validations'
 import type { Article } from '@/lib/type'
@@ -103,7 +103,7 @@ export function ArticleFormDialog({
 
       // Display warnings if any (non-blocking)
       if (validationResult.warnings.length > 0) {
-        displayValidationResults(validationResult, true)
+        displayValidationResults(validationResult)
       }
 
       let result

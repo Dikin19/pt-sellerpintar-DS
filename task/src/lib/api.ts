@@ -543,7 +543,7 @@ export async function getCurrentUser() {
     const userData = JSON.parse(savedUser);
     return userData;
   } catch (error) {
-    throw new Error("Invalid user data in localStorage");
+    throw new Error(`Invalid user data in localStorage ${error}`);
   }
 }
 

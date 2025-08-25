@@ -9,9 +9,8 @@ import { DeleteCategoryDialog } from "@/components/admin/categories/delete-categ
 import { RoleGuard } from "@/components/auth/role-guard"
 import { Pagination } from "@/components/ui/pagination"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { AdminCategoryFilters } from "@/components/admin/categories/admin-category-filters"
-import { Plus, Search } from "lucide-react"
+import { Plus } from "lucide-react"
 import { getCategories } from "@/lib/api"
 import type { Category, PaginatedResponse } from "@/lib/type"
 import { useDebounce } from "@/hooks/use-debounce"
@@ -137,18 +136,6 @@ export default function AdminCategoriesPage() {
     useEffect(() => {
         fetchAllCategories()
     }, [fetchAllCategories])
-
-    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value
-        console.log("Search input changed to:", value)
-        setSearch(value)
-        setCurrentPage(1) // Reset to first page when search changes
-
-        // If user clears the search, reset immediately
-        if (!value.trim()) {
-            console.log("Search cleared")
-        }
-    }, [])
 
     const handlePageChange = useCallback((page: number) => {
         setCurrentPage(page)

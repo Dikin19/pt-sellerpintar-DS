@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createAuthenticatedApi, getTokenFromRequest } from "@/lib/server-api";
 import {
   withAdminAuth,

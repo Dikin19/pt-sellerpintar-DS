@@ -1,5 +1,5 @@
 import { FieldErrors } from "react-hook-form";
-import { showErrorToast, showWarningToast } from "./toast-utils";
+import { showErrorToast} from "./toast-utils";
 
 // Form validation utilities
 export interface ValidationResult {
@@ -255,7 +255,6 @@ export const validateCategoryForm = (data: {
 // Display validation results using toasts
 export const displayValidationResults = (
   result: ValidationResult,
-  showWarnings: boolean = true
 ) => {
   if (result.errors.length > 0) {
     const errorMessage = result.errors.join("\n");

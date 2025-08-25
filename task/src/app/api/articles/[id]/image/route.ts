@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createAuthenticatedApi, getTokenFromRequest } from "@/lib/server-api";
+import { NextResponse } from "next/server";
 import {
   withAdminAuth,
   type AuthenticatedRequest,
@@ -13,8 +12,6 @@ export const PUT = withAdminAuth(
   ) => {
     try {
       const { id } = params;
-      const token = getTokenFromRequest(request);
-      const api = createAuthenticatedApi(token || undefined);
 
       // Get the form data from the request
       const formData = await request.formData();

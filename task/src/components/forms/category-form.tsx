@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { categoryFormSchema, type CategoryFormData } from '@/lib/validations';
 import { validateCategoryForm, displayValidationResults, displayFormErrors } from '@/lib/form-validation';
-import { showSuccessToast, showErrorToast, showPromiseToast } from '@/lib/toast-utils';
+import { showErrorToast, showPromiseToast } from '@/lib/toast-utils';
 import { createCategory, updateCategory } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,7 +54,7 @@ export function CategoryForm({ category, mode }: CategoryFormProps) {
 
       // Display warnings if any (non-blocking)
       if (validationResult.warnings.length > 0) {
-        displayValidationResults(validationResult, true);
+        displayValidationResults(validationResult);
       }
 
       if (mode === 'create') {

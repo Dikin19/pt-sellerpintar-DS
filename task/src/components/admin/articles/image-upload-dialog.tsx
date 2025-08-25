@@ -92,9 +92,9 @@ export function ImageUploadDialog({ open, onOpenChange, article, onSuccess }: Im
                 try {
                     const errorData = await response.json()
                     errorMessage = errorData.error || errorMessage
-                } catch (jsonError) {
+                } catch (error) {
                     // If response is not JSON, use status text or generic message
-                    errorMessage = response.statusText || `HTTP ${response.status}: ${errorMessage}`
+                    errorMessage = response.statusText || `HTTP ${response.status}: ${errorMessage}` || ``
                 }
                 throw new Error(errorMessage)
             }

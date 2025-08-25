@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Loading } from "@/components/ui/loading"
 import { useAuth } from "@/contexts/auth-context"
 import { getArticle, getArticles } from "@/lib/api"
@@ -36,7 +36,7 @@ export default function ArticleDetailPage() {
 
           // Fetch related articles - prioritize same category first
           setRelatedLoading(true)
-          let relatedResponse = await getArticles({
+          const relatedResponse = await getArticles({
             categoryId: articleData.categoryId,
             limit: 10, // Get more to filter out current article
           })

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import api from "@/lib/axios";
 import {
-  showSuccessToast,
   showErrorToast,
   showPromiseToast,
 } from "@/lib/toast-utils";

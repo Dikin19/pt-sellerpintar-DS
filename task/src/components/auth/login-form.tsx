@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { loginFormSchema, type LoginFormData } from "@/lib/validations";
 import { validateLoginForm, displayValidationResults, displayFormErrors } from "@/lib/form-validation";
-import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
+import { showErrorToast } from "@/lib/toast-utils";
 import Link from "next/link";
 
 interface LoginFormProps {
@@ -49,7 +49,7 @@ export function LoginForm({ onSubmit, isLoading = false, error, clearError }: Lo
 
             // Display warnings if any (non-blocking)
             if (validationResult.warnings.length > 0) {
-                displayValidationResults(validationResult, true);
+                displayValidationResults(validationResult);
             }
 
             if (onSubmit) {
@@ -59,8 +59,7 @@ export function LoginForm({ onSubmit, isLoading = false, error, clearError }: Lo
                 // showSuccessToast("Login form submitted successfully!");
             }
         } catch (error) {
-            // console.error("Login failed:", error);
-            showErrorToast("Login failed. Please try again.");
+            showErrorToast(`Login failed. ${error}`);
         }
     };
 
@@ -99,8 +98,8 @@ export function LoginForm({ onSubmit, isLoading = false, error, clearError }: Lo
                                     }
                                 }
                             })}
-                            // aria-invalid={errors.username ? "true" : "false"}
-                            // className={errors.username ? "border-red-500 focus:ring-red-500" : ""}
+                        // aria-invalid={errors.username ? "true" : "false"}
+                        // className={errors.username ? "border-red-500 focus:ring-red-500" : ""}
                         />
                         {errors.username && (
                             <p className="text-sm text-red-600" role="alert">
@@ -125,8 +124,8 @@ export function LoginForm({ onSubmit, isLoading = false, error, clearError }: Lo
                                         }
                                     }
                                 })}
-                                // aria-invalid={errors.password ? "true" : "false"}
-                                // className={`pr-10 ${errors.password ? "border-red-500 focus:ring-red-500" : ""}`}
+                            // aria-invalid={errors.password ? "true" : "false"}
+                            // className={`pr-10 ${errors.password ? "border-red-500 focus:ring-red-500" : ""}`}
                             />
                             <button
                                 type="button"

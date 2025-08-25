@@ -181,10 +181,6 @@ export default function AdminArticlesPage() {
     fetchAllArticles()
   }, [fetchCategories, fetchAllArticles])
 
-  const handleFiltersChange = useCallback((newFilters: { search: string; categoryId: string }) => {
-    setFilters(newFilters)
-    setCurrentPage(1) // Reset to first page when filters change
-  }, [])
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page)

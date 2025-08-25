@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Plus, X } from "lucide-react"
+import { Search, X } from "lucide-react"
 
 interface AdminCategoryFiltersProps {
     search: string
@@ -14,7 +14,6 @@ interface AdminCategoryFiltersProps {
 export function AdminCategoryFilters({
     search,
     onSearchChange,
-    onAddCategory,
     resultsInfo,
 }: AdminCategoryFiltersProps) {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
